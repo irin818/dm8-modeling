@@ -60,4 +60,4 @@ Leave-one-fly-out 在另四只 fly 上学习共享核。零监督适配使用源
 
 运行 `.venv/bin/dm8-model fit all --workspace-root .`，配置为 `configs/phase5_first_round.json`。输出在 Git 忽略的 `outputs/experiments/phase5_first_round/`：每 fold 的数据来源 manifest、响应 ROI 表、候选验证分数、八项数据诊断图、模型比较图；每模型的配置、源 hash、逐 ROI 测试指标、模型参数、分 fly 图、日志；总实验注册表和跨折比较 JSON。全部代码和配置在仓库中，原始数据必须按 README 放置在只读 `Dm8_module/`。
 
-本次重跑旧 QC、STA、Ridge、Pixel 并用 `scripts/compare_baselines.py` 检查，四项均为 **READABILITY_ONLY**：旧数值/数组未改变。22 项单元测试覆盖旧行为、新数据来源链、全局时间历史隔离、训练段归一化和合成共享核可恢复性。旧 Phase 1–4 报告继续保留作为历史结果，本报告为新五 fly 比较的最终解释。
+本次重跑旧 QC、STA、Ridge、Pixel 并用 `scripts/compare_baselines.py` 检查，四项均为 **READABILITY_ONLY**：旧数值/数组未改变。23 项单元测试覆盖旧行为、新数据来源链、全局时间历史隔离、训练段归一化、实验登记保留和合成共享核可恢复性。旧 Phase 1–4 报告继续保留作为历史结果，本报告为新五 fly 比较的最终解释。
