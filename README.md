@@ -7,8 +7,10 @@ baseline**. The recorded `Results.csv` columns are ROI mean intensities; their
 Dm8 identity and calcium preprocessing have not yet been independently
 verified.
 
-Read the [first-phase results](docs/PHASE1_REPORT.md) before interpreting any
-model output; the current held-out prediction is weak across all five runs.
+Read the [first-phase results](docs/PHASE1_REPORT.md) and the
+[validated pixel-model report](docs/PHASE2_REPORT.md) before interpreting
+model output. Most ROIs remain weakly predicted, while a subset has a
+reproducible local stimulus response.
 
 ## Modeling plan
 
@@ -25,6 +27,10 @@ model output; the current held-out prediction is weak across all five runs.
    required for independent temporal and spectral claims.
 5. With matching multi-condition data, test dimension interactions and build
    the mathematical/mechanistic and data-driven integrated models.
+
+The first interpretable predictive model is now a train-selected single-pixel
+temporal filter. It provides an auditable local response estimate for the
+current raw ROI target; it is not a verified Dm8 calcium or spectral model.
 
 Reverse correlation is a starting estimator, not the final mathematical
 model. The rank-one kernel energy fraction describes an estimated kernel; it
@@ -45,6 +51,9 @@ python3.12 -m venv .venv
   --response-transform causal_ema_60s --output-dir outputs/ema_exploratory
 .venv/bin/dm8-model --data-root /Users/irin/Documents/Dm8_module \
   --model ridge --output-dir outputs/ridge_raw
+.venv/bin/dm8-model --data-root /Users/irin/Documents/Dm8_module \
+  --model pixel --output-dir outputs/pixel_raw
+.venv/bin/python scripts/validate_pixel_model.py --results-dir outputs/pixel_raw
 ```
 
 `--data-root` can point to `Dm8_module` or its `UV-15Hz` child. No absolute
@@ -52,7 +61,9 @@ source path is embedded in the software. The command reads every discovered
 `fly*/<run>/Results.csv` session and writes results under
 `outputs/first_pass/`, which Git ignores. Use `--output-dir` to choose another
 result location. `--lag-count` changes the number of preceding 15 Hz stimulus
-updates; the default 45 corresponds to approximately three seconds.
+updates; the default is 45 for STA and 18 for the pixel model, corresponding
+to approximately three and 1.2 seconds, respectively. The ridge baseline
+uses its own fixed bin design.
 The optional 60-second exponential baseline subtraction uses only current
 and past responses. It is an exploratory drift-control comparison, not ΔF/F.
 
@@ -86,6 +97,13 @@ session-level held-out correlations, R², and rank-one kernel energy fractions.
 With `--model ridge`, `ridge_coefficients.npz` stores four temporally binned
 spatial filters and `baseline_metrics.json` records validation penalty choice
 and held-out scores.
+With `--model pixel`, `pixel_metrics.json` records each ROI's training-selected
+pixel, validation choice, test R²/correlation, and a circular-shift control.
+The family-wide false-discovery adjustment covers all 236 ROIs across the
+five runs. `pixel_model.npz` contains fitted coefficients, test predictions,
+test targets and timestamps. The validation script adds `validation.json` and
+an SVG example figure under the chosen output directory. Its paired
+moving-block bootstrap uses 68-frame blocks and a fixed random seed.
 
 This first pass uses raw ROI mean intensity as the target. It does **not**
 label the target as ΔF/F, infer GCaMP or genotype, establish Dm8 cell identity,
