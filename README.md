@@ -7,7 +7,8 @@ stimulus-to-Dm8-response model**. By project convention, these are Dm8 data.
 The recorded `Results.csv` columns are ROI mean intensities, so the numerical
 target is this measured signal rather than a derived ΔF/F trace.
 
-Read the [first-phase results](docs/PHASE1_REPORT.md),
+Start with the [complete modeling report](docs/DM8_MODELING_FINAL_REPORT.md).
+Its evidence is detailed in the [first-phase results](docs/PHASE1_REPORT.md),
 [validated pixel-model report](docs/PHASE2_REPORT.md), and
 [stimulus provenance and control report](docs/PHASE3_REPORT.md), plus the
 [compact CNN comparison](docs/PHASE4_CNN_COMPARISON.md), before
