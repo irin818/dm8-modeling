@@ -92,10 +92,71 @@ def _read_results(path: Path) -> tuple[np.ndarray, list[str]]:
     return response, labels
 
 
+def verify_binary_stimulus_package(recipe: dict, package: dict[str, np.ndarray]) -> dict:
+    """Check the saved binary sequence against its own seed and digital levels."""
+    if recipe.get("stimulus_family") != "binary_discrete_time":
+        raise ValueError("Only binary_discrete_time stimulus packages are supported")
+    updates = package["stimulus_updates_rc_float32"]
+    gray = package["stimulus_updates_display_gray_uint8"]
+    display = package["display_frames_gray_uint8"]
+    start = package["update_start_display_frame_idx_int32"]
+    rendering = recipe["rendering"]
+    dark, bright = int(rendering["dark_level"]), int(rendering["bright_level"])
+    if not 0 <= dark < bright <= 255 or updates.shape != gray.shape:
+        raise ValueError("Invalid digital gray levels or update shapes")
+    probability = float(recipe["family_parameters"]["binary_bright_probability"])
+    if not 0 <= probability <= 1:
+        raise ValueError("Invalid binary bright probability")
+    expected = np.where(
+        np.random.RandomState(int(recipe["randomization"]["seed"]))
+        .random_sample(updates.shape) < probability,
+        1.0, -1.0,
+    ).astype(np.float32)
+    expected_gray = np.where(expected > 0, bright, dark).astype(np.uint8)
+    if len(start) != len(updates) or np.any(start < 0) or np.any(start >= len(display)):
+        raise ValueError("Invalid display-frame indices for stimulus updates")
+    if not np.array_equal(updates, expected):
+        raise ValueError("Frozen binary stimulus differs from recipe seed reconstruction")
+    if not np.array_equal(gray, expected_gray):
+        raise ValueError("Frozen stimulus digital gray does not match ±1 coding")
+    if not np.array_equal(display[start], gray):
+        raise ValueError("Display frames differ from frozen update gray levels")
+    return {
+        "seed_reconstruction_passed": True,
+        "digital_gray_mapping_passed": True,
+        "minus_one_commanded_gray": dark,
+        "plus_one_commanded_gray": bright,
+        "digital_color_channel": str(rendering["color_channel"]),
+        "stimulus_seed": int(recipe["randomization"]["seed"]),
+        "nominal_pixel_width_deg": float(recipe["geometry"]["summary"]["derived"]["actual_cell_width_deg"]),
+        "nominal_pixel_height_deg": float(recipe["geometry"]["summary"]["derived"]["actual_cell_height_deg"]),
+    }
+
+
+def associate_imaging_with_updates(
+    update_times_us: np.ndarray, imaging_times_us: np.ndarray, payload_end_us: int
+) -> tuple[np.ndarray, np.ndarray]:
+    """Map Zeiss frame-out proxies to last preceding displayed update.
+
+    The start is inclusive and the planned payload end (indexed on recorded
+    DLP TTL) is exclusive. The imager's true exposure instant is unknown.
+    """
+    if (update_times_us.ndim != 1 or imaging_times_us.ndim != 1 or
+        len(update_times_us) == 0 or np.any(np.diff(update_times_us) <= 0) or
+        np.any(np.diff(imaging_times_us) <= 0) or payload_end_us <= update_times_us[-1]):
+        raise ValueError("Invalid aligned update/imaging clocks or payload end")
+    index = np.searchsorted(update_times_us, imaging_times_us, side="right") - 1
+    included = (index >= 0) & (imaging_times_us < payload_end_us)
+    return index, included
+
+
 def align_session(session: Session) -> AlignedSession:
     """Use the shared Due clock: locked DLP TTL for stimulus and Zeiss TTL for ROI rows."""
     run = session.path
+    with (run / "stimulus_package" / "stim_recipe.json").open() as handle:
+        recipe = json.load(handle)
     with np.load(run / "stimulus_package" / "stim_realized.npz", allow_pickle=False) as package:
+        stimulus_qc = verify_binary_stimulus_package(recipe, package)
         stimulus = package["stimulus_updates_rc_float32"].reshape(-1, 225)
         update_start_frame = package["update_start_display_frame_idx_int32"]
         display_count = len(package["display_frames_gray_uint8"])
@@ -124,8 +185,7 @@ def align_session(session: Session) -> AlignedSession:
     update_times = locked_ttl[update_start_frame]
     payload_end_us = int(locked_ttl[payload_end_frame])
     # Exposure time within a Zeiss frame is not supplied. Frame-out TTL is the declared proxy.
-    update_index = np.searchsorted(update_times, zeiss_ttl, side="right") - 1
-    in_payload = (update_index >= 0) & (zeiss_ttl < payload_end_us)
+    update_index, in_payload = associate_imaging_with_updates(update_times, zeiss_ttl, payload_end_us)
     if not np.any(in_payload):
         raise ValueError(f"No Zeiss frames overlap the recorded stimulus payload in {run}")
 
@@ -133,13 +193,26 @@ def align_session(session: Session) -> AlignedSession:
         acquisition_qc = json.load(handle)
     with (run / "analysis_marker_lock" / "marker_lock_summary.json").open() as handle:
         lock_qc = json.load(handle)
+    with (run / "analysis_alignment" / "analysis_summary.json").open() as handle:
+        optical_alignment = json.load(handle)
+    with (run / "offsite_analysis" / "ref" / "offsite_reference_summary.json").open() as handle:
+        reference_summary = json.load(handle)
+    with (run / "preflight_checklist.json").open() as handle:
+        preflight = json.load(handle)
+    dlp_sections = [item for item in preflight["sections"] if item["section_name"] == "DLP GUI"]
+    if len(dlp_sections) != 1:
+        raise ValueError(f"Expected one DLP preflight section in {run}")
     clock_offset_s = locked_ttl / 1_000_000 - flip_time_s
     residual_ms = (clock_offset_s - np.median(clock_offset_s)) * 1000
     qc = {
+        **stimulus_qc,
         "source_sha256": {
             "stim_realized.npz": _sha256(run / "stimulus_package" / "stim_realized.npz"),
+            "stim_recipe.json": _sha256(run / "stimulus_package" / "stim_recipe.json"),
             "Results.csv": _sha256(run / "Results.csv"),
             "dlp_ttl_marker_locked.csv": _sha256(run / "analysis_marker_lock" / "dlp_ttl_marker_locked.csv"),
+            "preflight_checklist.json": _sha256(run / "preflight_checklist.json"),
+            "offsite_reference_summary.json": _sha256(run / "offsite_analysis" / "ref" / "offsite_reference_summary.json"),
             zeiss_files[0].name: _sha256(zeiss_files[0]),
         },
         "all_zeiss_frames": int(len(zeiss_ttl)),
@@ -157,6 +230,11 @@ def align_session(session: Session) -> AlignedSession:
         "response_kind": "unprocessed_ROI_mean_intensity",
         "imaging_time_proxy": "Zeiss frame-out TTL timestamp_us",
         "stimulus_time_source": "marker-locked DLP TTL timestamp_us",
+        "fly_side_orientation_calibration": reference_summary.get("canonical_orientation"),
+        "preflight_dlp_light_source": dlp_sections[0]["profile"].get("light_source"),
+        "marker_ttl_to_optical_latency_us": optical_alignment.get("trial_start_anchor_ttl_to_optical_latency_us"),
+        "physical_wavelength_nm": None,
+        "physical_irradiance": None,
     }
     return AlignedSession(
         session, stimulus, update_index[in_payload], response[in_payload], labels,
