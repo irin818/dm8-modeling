@@ -2,16 +2,17 @@
 
 This repository starts a reproducible analysis of the five `UV-15Hz` fly runs
 in `Dm8_module`. It reads the experiment directory without changing it. The
-current scientific target is a **single-condition spatiotemporal encoding
-baseline**. The recorded `Results.csv` columns are ROI mean intensities; their
-Dm8 identity and calcium preprocessing have not yet been independently
-verified.
+current graduation-design target is a **usable, explainable single-condition
+stimulus-to-Dm8-response model**. By project convention, these are Dm8 data.
+The recorded `Results.csv` columns are ROI mean intensities, so the numerical
+target is this measured signal rather than a derived ΔF/F trace.
 
 Read the [first-phase results](docs/PHASE1_REPORT.md),
 [validated pixel-model report](docs/PHASE2_REPORT.md), and
 [stimulus provenance and control report](docs/PHASE3_REPORT.md) before
-interpreting model output. Most ROIs remain weakly predicted, while a subset has a
-reproducible local stimulus response.
+interpreting model output. The [graduation-design guide](docs/GRADUATION_DESIGN_GUIDE.md)
+gives the final presentation path. Most ROIs remain weakly predicted, while
+a subset has a reproducible local stimulus response.
 
 ## Modeling plan
 
@@ -22,16 +23,15 @@ reproducible local stimulus response.
 3. Fit a causal spatiotemporal white-noise STRF baseline. Test prediction on
    a later time block separated from training by a temporal gap. Compare the
    full STRF with its rank-one space/time approximation.
-4. If source identity and signal processing are verified, compare a
-   regularized interpretable model with a compact neural network under the
-   same train/test split. Separately controlled time and wavelength data are
-   required for independent temporal and spectral claims.
-5. With matching multi-condition data, test dimension interactions and build
-   the mathematical/mechanistic and data-driven integrated models.
+4. Complete a compact, interpretable model and an independently executable
+   prediction demo using the available Dm8 records. Explain both successful
+   example ROIs and weak results across the full dataset.
+5. Treat spectral, genotype, and multi-condition models as optional future
+   extensions outside this graduation-design deliverable.
 
 The first interpretable predictive model is now a train-selected single-pixel
 temporal filter. It provides an auditable local response estimate for the
-current raw ROI target; it is not a verified Dm8 calcium or spectral model.
+current raw ROI target. It makes no spectral or genotype claim.
 
 Reverse correlation is a starting estimator, not the final mathematical
 model. The rank-one kernel energy fraction describes an estimated kernel; it
@@ -57,6 +57,9 @@ python3.12 -m venv .venv
 .venv/bin/python scripts/validate_pixel_model.py --results-dir outputs/pixel_raw
 .venv/bin/python scripts/check_common_mode.py \
   --data-root /Users/irin/Documents/Dm8_module --results-dir outputs/pixel_raw
+.venv/bin/dm8-predict --data-root /Users/irin/Documents/Dm8_module \
+  --model-file outputs/pixel_raw/fly1/20260619_105040/pixel_model.npz \
+  --roi Mean29 --output-csv outputs/demo_fly1_Mean29.csv
 ```
 
 `--data-root` can point to `Dm8_module` or its `UV-15Hz` child. No absolute
@@ -109,22 +112,23 @@ With `--model pixel`, `pixel_metrics.json` records each ROI's training-selected
 pixel, validation choice, test R²/correlation, and a circular-shift control.
 The family-wide false-discovery adjustment covers all 236 ROIs across the
 five runs. `pixel_model.npz` contains fitted coefficients, test predictions,
-test targets and timestamps. The validation script adds `validation.json` and
+intercepts, selected pixels, test targets and timestamps. `dm8-predict`
+reconstructs the held-out prediction from those fitted parameters and the
+frozen stimulus, and checks it against the saved result. The validation script adds `validation.json` and
 an SVG example figure under the chosen output directory. Its paired
 moving-block bootstrap uses 68-frame blocks and a fixed random seed.
 `scripts/check_common_mode.py` adds an exploratory same-time peer-ROI control
 at `common_mode_control.json`. Because it uses other ROIs' test responses,
 that control is not a stimulus-only predictive model.
 
-This first pass uses raw ROI mean intensity as the target. It does **not**
-label the target as ΔF/F, infer GCaMP or genotype, establish Dm8 cell identity,
+This graduation-design model treats the supplied runs as Dm8 data and uses
+raw ROI mean intensity as the target. It does **not** call that target ΔF/F,
 or calibrate wavelength or irradiance. The `UV-15Hz` folder label is not a
 physical spectral measurement. All five flies received the same frozen
 stimulus sequence, so the within-run late-block test measures prediction on
 a later portion of that sequence; it does not test a new random seed,
-stimulus family, or
-independent-fly generalization test. A dedicated analysis must quantify
-repeat reliability and biological response quality before strong conclusions.
+stimulus family, or independent-fly generalization test. The project reports
+these limits without requiring additional data for the graduation deliverable.
 
 The existing `alife_study_exp` repository is an Allen Visual Coding practice
 project. A separate local `07E` experiment-engineering copy contains the
