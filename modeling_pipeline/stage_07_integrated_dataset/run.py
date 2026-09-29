@@ -1,12 +1,11 @@
-"""Stage 07: integrated dataset. Orchestrate existing source APIs; do not implement algorithms here."""
+"""Stage 07: Build the provenance-preserving five-fly observation table."""
 from __future__ import annotations
-import json
 from pathlib import Path
+import shutil
 from dm8_modeling.experiments.workflow import WorkflowContext
 from dm8_modeling.io.stage_manifest import write_stage_manifest
-from dm8_modeling.io.tables import save_json, save_csv
+from dm8_modeling.io.tables import save_json
 
-import shutil
 from dm8_modeling.datasets import load_individual_datasets, build_integrated_dataset, write_integrated_manifest
 from dm8_modeling.experiments.config import Phase5Config
 
@@ -26,11 +25,3 @@ def run(context: WorkflowContext) -> Path:
         [previous, context.dataset_root / "individual/manifest.json", context.phase5_config_path],
         [manifest, summary, example, dataset_manifest], context.root,
         details={"observation_count": len(integrated.y), "independent_stimulus_sequences": 1})
-
-
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--workspace-root", type=Path, default=Path.cwd())
-    args = parser.parse_args()
-    print(run(WorkflowContext.load(args.workspace_root)))

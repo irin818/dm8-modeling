@@ -1,10 +1,9 @@
-"""Stage 01: source audit. Orchestrate existing source APIs; do not implement algorithms here."""
+"""Stage 01: Inventory immutable experiment files and stimulus source code."""
 from __future__ import annotations
-import json
 from pathlib import Path
 from dm8_modeling.experiments.workflow import WorkflowContext
 from dm8_modeling.io.stage_manifest import write_stage_manifest
-from dm8_modeling.io.tables import save_json, save_csv
+from dm8_modeling.io.tables import save_json
 
 from dm8_modeling.workspace import scan_data_inventory, write_inventory
 
@@ -22,11 +21,3 @@ def run(context: WorkflowContext) -> Path:
         [context.root / "configs/workflow.json", *source_files, *scripts],
         [inventory_json, inventory_md, source_index], context.root,
         details={"experimental_file_count": len(entries), "stimulus_source_python_files": len(scripts)})
-
-
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--workspace-root", type=Path, default=Path.cwd())
-    args = parser.parse_args()
-    print(run(WorkflowContext.load(args.workspace_root)))

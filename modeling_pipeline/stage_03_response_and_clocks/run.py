@@ -1,10 +1,9 @@
-"""Stage 03: response and clocks. Orchestrate existing source APIs; do not implement algorithms here."""
+"""Stage 03: Summarize raw ROI intensities and recorded clocks."""
 from __future__ import annotations
-import json
 from pathlib import Path
 from dm8_modeling.experiments.workflow import WorkflowContext
 from dm8_modeling.io.stage_manifest import write_stage_manifest
-from dm8_modeling.io.tables import save_json, save_csv
+from dm8_modeling.io.tables import save_json
 
 from dm8_modeling.data import SessionPaths, discover_sessions, load_response_data, load_clock_data
 
@@ -28,11 +27,3 @@ def run(context: WorkflowContext) -> Path:
     out = context.stage_dir(3)
     summary = save_json(out / "response_clock_summary.json", rows)
     return write_stage_manifest("stage_03_response_and_clocks", out, context.config, inputs, [summary], context.root)
-
-
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--workspace-root", type=Path, default=Path.cwd())
-    args = parser.parse_args()
-    print(run(WorkflowContext.load(args.workspace_root)))

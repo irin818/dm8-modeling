@@ -5,7 +5,7 @@ test-selected pixel metrics are descriptive only; Phase 5 selection is separate.
 """
 from __future__ import annotations
 import numpy as np
-from ..model import lagged_design
+from ..features.lagged import lagged_design
 from ..rf.null_tests import _shift_p_values
 from ..preprocessing import candidate_response
 from .diagnostics import _corr

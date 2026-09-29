@@ -1,10 +1,9 @@
-"""Stage 06: individual dataset. Orchestrate existing source APIs; do not implement algorithms here."""
+"""Stage 06: Record one model-ready dataset per fly and run."""
 from __future__ import annotations
-import json
 from pathlib import Path
 from dm8_modeling.experiments.workflow import WorkflowContext
 from dm8_modeling.io.stage_manifest import write_stage_manifest
-from dm8_modeling.io.tables import save_json, save_csv
+from dm8_modeling.io.tables import save_json
 
 import numpy as np
 from dm8_modeling.datasets import load_individual_datasets
@@ -29,11 +28,3 @@ def run(context: WorkflowContext) -> Path:
     return write_stage_manifest("stage_06_individual_dataset", out, context.config,
                                 [previous, context.phase5_config_path],
                                 [summary, dataset_manifest], context.root)
-
-
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--workspace-root", type=Path, default=Path.cwd())
-    args = parser.parse_args()
-    print(run(WorkflowContext.load(args.workspace_root)))

@@ -1,10 +1,8 @@
-"""Stage 09: individual models. Orchestrate existing source APIs; do not implement algorithms here."""
+"""Stage 09: Fit independent pixel and Ridge baselines on shared folds."""
 from __future__ import annotations
-import json
 from pathlib import Path
 from dm8_modeling.experiments.workflow import WorkflowContext
 from dm8_modeling.io.stage_manifest import write_stage_manifest
-from dm8_modeling.io.tables import save_json, save_csv
 
 from dm8_modeling.experiments.runner import run_first_round
 
@@ -19,11 +17,3 @@ def run(context: WorkflowContext) -> Path:
     registry = experiment_dir / "experiment_registry.csv"
     return write_stage_manifest("stage_09_individual_models", out, context.config,
         [previous, context.phase5_config_path], [summary, registry], context.root)
-
-
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--workspace-root", type=Path, default=Path.cwd())
-    args = parser.parse_args()
-    print(run(WorkflowContext.load(args.workspace_root)))

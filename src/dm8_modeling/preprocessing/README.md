@@ -42,7 +42,7 @@ causal_ema_baseline；causal_ema_residual；candidate_response；fit_response_sc
 
 ## 可调参数
 
-workflow.json response 主表示/normalization；phase5 config 的候选；旧 60s EMA 默认固定为历史兼容。
+`configs/phase5_first_round.json` 定义主响应表示、训练段标准化和候选列表；旧 60 秒 EMA 为历史兼容的固定方法。
 
 ## 上游依赖
 

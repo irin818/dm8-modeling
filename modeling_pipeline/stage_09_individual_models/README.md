@@ -50,7 +50,7 @@ Stage 10 共享模型的 baseline。
 
 ## 13. 哪些参数可以修改？
 
-Ridge alpha、feature 历史、fold 在 phase5_first_round.json；旧 STA/像素 lag 由旧 CLI 控制，`workflow.json` 仅记录相应工作流说明值。
+Ridge alpha、feature 历史、fold 在 `configs/phase5_first_round.json`；旧 STA/像素 lag 由旧 CLI 控制。
 
 ## 14. 哪些东西不能随便修改？
 

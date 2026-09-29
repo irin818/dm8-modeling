@@ -1,10 +1,9 @@
-"""Stage 05: response processing. Orchestrate existing source APIs; do not implement algorithms here."""
+"""Stage 05: Describe causal response processing and training-only scaling."""
 from __future__ import annotations
-import json
 from pathlib import Path
 from dm8_modeling.experiments.workflow import WorkflowContext
 from dm8_modeling.io.stage_manifest import write_stage_manifest
-from dm8_modeling.io.tables import save_json, save_csv
+from dm8_modeling.io.tables import save_json
 
 import numpy as np
 from dm8_modeling.data import align_session, discover_sessions
@@ -15,15 +14,15 @@ from dm8_modeling.preprocessing import candidate_response, fit_response_scaler
 def run(context: WorkflowContext) -> Path:
     previous = context.require_previous(5)
     config = Phase5Config.load(context.phase5_config_path)
+    kind = config.raw["response"]["primary_kind"]
+    normalization = config.raw["response"]["primary_normalization"]
     rows = []
     for session in discover_sessions(context.data_root):
         aligned = align_session(session)
-        kind = context.config["response"]["primary_kind"]
         response = candidate_response(aligned.response, aligned.imaging_time_us, kind)
         eligible = aligned.update_index >= config.feature.history_updates - 1
         labels = config.folds[0].labels(aligned.update_index[eligible], len(aligned.stimulus))
-        scaler = fit_response_scaler(response[eligible], labels == TRAIN,
-                                     context.config["response"]["normalization"])
+        scaler = fit_response_scaler(response[eligible], labels == TRAIN, normalization)
         rows.append({"fly_id": session.fly, "response_kind": kind,
                      "eligible_response_shape": list(response[eligible].shape),
                      "train_frames": int(np.sum(labels == TRAIN)),
@@ -34,11 +33,3 @@ def run(context: WorkflowContext) -> Path:
     summary = save_json(out / "response_processing_summary.json", rows)
     return write_stage_manifest("stage_05_response_processing", out, context.config,
                                 [previous, context.phase5_config_path], [summary], context.root)
-
-
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--workspace-root", type=Path, default=Path.cwd())
-    args = parser.parse_args()
-    print(run(WorkflowContext.load(args.workspace_root)))

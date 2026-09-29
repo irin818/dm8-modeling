@@ -9,9 +9,9 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from .cnn import predict_compact_cnn
+from .models.neural.compact_cnn import predict_compact_cnn
 from .data import align_session, discover_sessions
-from .model import _scores
+from .evaluation.legacy_metrics import _scores
 
 
 def main() -> None:

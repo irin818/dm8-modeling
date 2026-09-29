@@ -4,7 +4,7 @@
 
 | 旧路径/职责 | 新 canonical owner | 兼容状态 / Stage |
 |---|---|---|
-| `src/dm8_modeling/workspace.py` | `workspace/paths.py`、`workspace/inventory.py` | wrapper 保留；01 |
+| `src/dm8_modeling/workspace.py` | `workspace/paths.py`、`workspace/inventory.py` | 同名 package 已提供原导入路径；多余文件已删除；01 |
 | `src/dm8_modeling/data/` 中的混合 loader | `data/stimulus.py`、`response.py`、`clocks.py`、`alignment.py`、`schema.py` | 数据子模块直接使用；02–04 |
 | `src/dm8_modeling/model.py` 中的 lagged feature | `features/lagged.py` | wrapper 保留；06 |
 | `model.py` 中的 EMA residual | `preprocessing/baseline.py`、`fluorescence.py` | wrapper 保留；05 |
@@ -17,14 +17,16 @@
 | `src/dm8_modeling/cnn.py` | `models/neural/compact_cnn.py` | wrapper 保留；旧 CNN 对照 |
 | `src/dm8_modeling/pipeline.py` | `datasets/legacy_model_dataset.py` | wrapper 保留；旧 CLI |
 | `src/dm8_modeling/splits.py` | `datasets/legacy_splits.py`；新全局 split 在 `datasets/splits.py` | wrapper 保留；06/07 |
-| `src/dm8_modeling/evaluation/cross_fly.py` 中的模型训练 | `experiments/transfer.py` | wrapper 保留；10 |
+| `src/dm8_modeling/evaluation/cross_fly.py` 中的模型训练 | `experiments/transfer.py` | 无实际调用的转发文件已删除；10 |
 | `src/dm8_modeling/audit.py` | `evaluation/audit.py`、`diagnostics.py`、`rf_quality.py` | wrapper 保留；03/08/11 |
 | `src/dm8_modeling/cli.py` | `cli/__init__.py`、`legacy.py`、`pipeline.py`、`dataset.py` | `dm8-model` 保留旧命令并新增 workflow；01–12 |
-| `src/dm8_modeling/phase5_cli.py` | `cli/dataset.py` | wrapper 保留；06–11 |
+| `src/dm8_modeling/phase5_cli.py` | `cli/dataset.py` | 无命令入口或实际调用的转发文件已删除；06–11 |
 | `tests/test_model.py`、`test_cnn.py` | `tests/models/` | 同样的 unittest discovery |
 | `tests/test_phase5.py`、`test_workspace_audit.py` | `tests/integration/` | 同样的 unittest discovery |
 
 `src/dm8_modeling/predict_cli.py`、`cnn_cli.py`、`cnn_predict_cli.py` 保持历史入口以确保保存模型可以重播。`models/linear/individual.py` 和 `models/population/` 原本已有明确职责，本次保留其数学实现。计划中的 smooth STRF、LN、shared CNN/TCN 只在模型地图注明，没有创建空算法文件。
+
+后续精简还删除了 `modeling_pipeline/` 下 13 个不参与 Stage 加载的 `__init__.py`，并让 Stage 05 与模型阶段共同读取 `configs/phase5_first_round.json` 的响应设置。保留的短 wrapper 仍被历史脚本、测试或保存模型入口使用；详见 [`精简说明`](docs/PROJECT_SIMPLIFICATION.md)。
 
 ## 输出与脚本
 
