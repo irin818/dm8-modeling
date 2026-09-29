@@ -8,6 +8,7 @@ import numpy as np
 
 from .data import AlignedSession
 from .model import _finite_or_none, _scores, lagged_design
+from .splits import blocked_split
 
 
 @dataclass
@@ -119,11 +120,11 @@ def fit_pixel_model(
     y = aligned.response[eligible]
     times = aligned.imaging_time_us[eligible]
     n = len(y)
-    train_end = int(n * 0.5)
-    validation_start = train_end + lag_count
-    validation_end = int(n * 0.7)
-    test_start = validation_end + lag_count
-    if train_end < 100 or validation_end - validation_start < 100 or n - test_start < 100:
+    split = blocked_split(update_index, lag_count, validation=True)
+    train_end = split.train.stop
+    validation_start, validation_end = split.validation.start, split.validation.stop
+    test_start = split.test.start
+    if train_end < 100 or validation_end - validation_start < 100:
         raise ValueError("Insufficient time-separated training, validation or test rows")
 
     n_pixels = aligned.stimulus.shape[1]

@@ -8,6 +8,7 @@ import numpy as np
 
 from .data import AlignedSession
 from .model import _finite_or_none, _scores, causal_ema_residual
+from .splits import blocked_split
 
 
 @dataclass
@@ -74,12 +75,10 @@ def fit_binned_ridge(
         raise ValueError("Too few usable imaging frames")
     x = binned_design(aligned.stimulus, index, bins, updates_per_bin)
     n = len(response)
-    train_end = int(n * 0.5)
-    val_start = train_end + history
-    val_end = int(n * 0.7)
-    test_start = val_end + history
-    if val_start >= val_end or test_start >= n - 100:
-        raise ValueError("Insufficient separated validation or test frames")
+    split = blocked_split(index, history, validation=True)
+    train_end = split.train.stop
+    val_start, val_end = split.validation.start, split.validation.stop
+    test_start = split.test.start
     alpha_candidates = (0.001, 0.01, 0.1, 1.0, 10.0)
     validation = []
     for alpha in alpha_candidates:
