@@ -33,10 +33,16 @@
 | 旧入口或数据 | 当前责任模块 |
 |---|---|
 | 路径散落在调用命令 | `workspace.py`；CLI `--workspace-root`/`--data-root`/`--stimulus-code-root`/`--output-dir` |
-| 会话读取及 TTL/响应对齐 | `data.py`，原行为保留 |
+| 会话读取及 TTL/响应对齐 | `data/` 包中的 discovery、stimulus、clocks、response、alignment；原导入接口保留 |
 | 可讲解的 X/y 对象 | `pipeline.py`；`model.py:lagged_design` |
-| 候选 F0 / ΔF/F | `preprocessing.py`，单独标记，未替换主 y |
+| 候选 F0 / ΔF/F | `preprocessing/fluorescence.py`；训练段尺度在 `normalization.py` |
 | STA/Ridge/像素模型各自分块 | `splits.py` 统一边界及刺激历史防泄漏检查；模型算法保持原模块 |
-| 逐 ROI、时间、RF 审计 | `audit.py` 和 `scripts/audit_*`；输出到 `outputs/audit/` |
+| 逐 ROI、时间、RF 审计 | `evaluation/` 包，旧 `audit.py` 为兼容导入；输出到 `outputs/audit/` |
 
 运行命令及每步产生文件见仓库 [README](../README.md)。
+
+## 7. 第五阶段的五 fly 整合路径
+
+`datasets.individual` 把五只 fly 的对齐结果各自保留为 `[frame,ROI]`，并验证已保存数字刺激逐元素相同。`features.temporal_basis` 只建立一次公共 `[8961,900]` 因果特征表；`datasets.integrated` 用索引表示逻辑 `[1,907,824,900]` 长表并保存每行来源，不把五只 fly 当成五条独立刺激。`datasets.splits` 在刺激更新轴上为所有 fly 统一分训练、验证、测试及 39 更新 purge。`preprocessing.normalization` 只用训练段求 ROI 尺度，`evaluation.reliability` 只用训练段定义响应子集。
+
+`experiments.runner` 从 `configs/phase5_first_round.json` 复算单像素/Ridge、共享 STRF、分层 STRF、共享低秩、群体均值、候选响应和留一 fly。每次保存配置、源 hash、模型参数、逐 ROI/每 fly 指标与图。详细数学形式、两折结果和重要的“历史测试并非盲测”限制分别见 [整合数据集](INTEGRATED_DATASET.md)、[多 fly 模型](POPULATION_MODELING.md)、[最终报告](FINAL_PREDICTIVE_MODEL_REPORT.md)。

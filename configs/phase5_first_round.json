@@ -1,0 +1,18 @@
+{
+  "schema_version": "phase5_config_v1",
+  "feature": {"bins": 4, "updates_per_bin": 10, "lag_count": 40},
+  "folds": [
+    {"name": "fold_a", "train_end_update": 4500, "validation_end_update": 5400, "test_end_update": 6750},
+    {"name": "fold_b", "train_end_update": 5400, "validation_end_update": 6750, "test_end_update": 9000}
+  ],
+  "response": {"primary_kind": "raw", "primary_normalization": "train_zscore",
+               "candidate_kinds": ["raw", "causal_ema_residual_60s", "candidate_ema_dff_60s", "causal_block_median_residual_60s"]},
+  "roi_selection": {"name": "TRAIN_DEFINED_RESPONSIVE", "train_shift_null_p_below": 0.05,
+                    "split_half_kernel_r_above": 0.0, "train_zero_fraction_below": 0.2},
+  "model": {"ridge_alphas": [0.001, 0.01, 0.1, 1.0],
+            "shared_alphas": [0.01, 0.1, 1.0], "fly_penalties": [0.01, 0.1, 1.0],
+            "basis_counts": [1, 2, 3, 4], "basis_head_alphas": [0.01, 0.1],
+            "shared_iterations": 5, "loss_weighting": "equal_fly"},
+  "transfer": {"few_shot_fraction": 0.2},
+  "random_seed": 20260422
+}

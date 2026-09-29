@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -16,6 +17,10 @@ from .workspace import WorkspacePaths, scan_data_inventory, write_inventory
 
 
 def main() -> None:
+    if len(sys.argv) > 1 and sys.argv[1] in {"dataset", "fit", "evaluate"}:
+        from .phase5_cli import main as phase5_main
+        phase5_main(sys.argv[1:])
+        return
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--workspace-root", type=Path, default=Path.cwd(), help="Root containing simulate and Dm8_module")
     parser.add_argument("--data-root", type=Path, help="Override Dm8_module or UV-15Hz directory")
