@@ -44,7 +44,12 @@ def _compare_pair(model_path: Path, baseline_path: Path) -> dict:
             "per_fly": per_fly}
 
 
-def write_cross_fold_comparison(root: Path) -> dict:
+def compare_cross_fold(root: Path) -> dict:
+    """Compare saved ROI scores and kernels across two folds without writing.
+
+    Inputs are Stage 10 model artifacts. Output is a fly-aware summary dict;
+    no model fitting or experimental source mutation occurs here.
+    """
     pairs = {
         "shared_strf_affine": "individual_ridge",
         "shared_plus_fly_deviation": "individual_ridge",
@@ -71,6 +76,12 @@ def write_cross_fold_comparison(root: Path) -> dict:
         output["parameter_stability"][name] = {"absolute_first_direction_cosine": abs(cosine),
             "sign_ambiguous_cosine": cosine,
             "note": "A broad shared training prefix makes these two fits correlated; this is descriptive, not independent replication."}
+    return output
+
+
+def write_cross_fold_comparison(root: Path) -> dict:
+    """Persist the historical Phase 5 comparison at its existing path."""
+    output = compare_cross_fold(root)
     path = root / "cross_fold_comparison.json"
     path.write_text(json.dumps(output, indent=2, allow_nan=False) + "\n")
     return output

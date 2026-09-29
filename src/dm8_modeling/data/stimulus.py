@@ -6,7 +6,9 @@ this does not measure light delivered at the fly.
 from __future__ import annotations
 import hashlib
 from pathlib import Path
+import json
 import numpy as np
+from .schema import SessionPaths, StimulusData
 
 def _sha256(path: Path) -> str:
     digest = hashlib.sha256()
@@ -55,3 +57,26 @@ def verify_binary_stimulus_package(recipe: dict, package: dict[str, np.ndarray])
         "nominal_pixel_width_deg": float(recipe["geometry"]["summary"]["derived"]["actual_cell_width_deg"]),
         "nominal_pixel_height_deg": float(recipe["geometry"]["summary"]["derived"]["actual_cell_height_deg"]),
     }
+
+
+def load_stimulus_data(paths: SessionPaths) -> tuple[StimulusData, dict]:
+    """Read one frozen package: updates [9000,225] in digital ±1, frame indices [9000].
+
+    The saved display sequence contains 74,436 frames at nominal 120 Hz;
+    72,000 payload frames encode 9,000 updates at nominal 15 Hz (8 frames
+    per update). Recipe values are commands, not measured optical intensity.
+    """
+    with (paths.stimulus_package / "stim_recipe.json").open() as handle:
+        recipe = json.load(handle)
+    timing = recipe["stimulus_timing"]
+    geometry = recipe["geometry"]["summary"]["derived"]
+    update_count = int(timing["stimulus_update_count"])
+    pixel_count = int(geometry["grid_rows"]) * int(geometry["grid_cols"])
+    with np.load(paths.stimulus_package / "stim_realized.npz", allow_pickle=False) as package:
+        qc = verify_binary_stimulus_package(recipe, package)
+        updates = package["stimulus_updates_rc_float32"].reshape(-1, pixel_count)
+        starts = package["update_start_display_frame_idx_int32"]
+        display_count = len(package["display_frames_gray_uint8"])
+    if updates.shape != (update_count, pixel_count) or len(starts) != update_count:
+        raise ValueError(f"Unexpected frozen stimulus dimensions in {paths.root}")
+    return StimulusData(updates, starts, display_count, recipe), qc

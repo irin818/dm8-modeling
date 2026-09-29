@@ -1,0 +1,11 @@
+{
+  "schema_version": "workflow_v1",
+  "data_root": "Dm8_module",
+  "stimulus_code_root": "simulate",
+  "dataset_root": "datasets",
+  "output_root": "outputs",
+  "phase5_experiment_config": "configs/phase5_first_round.json",
+  "response": {"primary_kind": "raw", "normalization": "train_zscore", "ema_tau_seconds": 60},
+  "features": {"sta_lag_updates": 45, "pixel_lag_updates": 18, "temporal_bins": 4, "updates_per_bin": 10},
+  "reporting": {"historical_test_is_blind": false, "biological_replicate": "fly"}
+}

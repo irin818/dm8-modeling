@@ -6,6 +6,7 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 import numpy as np
+from .schema import SessionPaths, ResponseData
 
 def _read_results(path: Path) -> tuple[np.ndarray, list[str]]:
     with path.open(newline="", encoding="utf-8-sig") as handle:
@@ -23,3 +24,9 @@ def _read_results(path: Path) -> tuple[np.ndarray, list[str]]:
     if not np.isfinite(response).all():
         raise ValueError(f"Non-finite ROI intensity in {path}")
     return response, labels
+
+
+def load_response_data(paths: SessionPaths) -> ResponseData:
+    """Return raw Results.csv intensity [frame,ROI] and original zero-based rows."""
+    values, labels = _read_results(paths.results_csv)
+    return ResponseData(values, tuple(labels), np.arange(len(values), dtype=np.int32))

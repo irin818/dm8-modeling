@@ -18,7 +18,7 @@ import numpy as np
 
 from ..datasets import build_integrated_dataset, build_population_dataset, load_individual_datasets, write_integrated_manifest
 from ..datasets.splits import TEST, TRAIN
-from ..evaluation.cross_fly import leave_one_fly_out
+from .transfer import leave_one_fly_out
 from ..evaluation.comparison import write_cross_fold_comparison
 from ..evaluation.metrics import score_columns, summarize_roi_records
 from ..evaluation.plots import write_dataset_diagnostics, write_fly_scores, write_model_comparison, write_population_scores
@@ -138,7 +138,8 @@ def run_first_round(config_path: Path, data_root: Path, output_root: Path,
         (fold_root / "dataset" / "example_provenance.json").write_text(json.dumps(provenance, indent=2) + "\n")
         del integrated
         processed = {item.fly_id: process_individual_response(item, "raw", "train_zscore") for item in individuals}
-        reliability = {item.fly_id: assess_training_reliability(item, processed[item.fly_id]) for item in individuals}
+        reliability = {item.fly_id: assess_training_reliability(
+            item, processed[item.fly_id], config.raw["roi_selection"]) for item in individuals}
         selected = {fly: result.selected for fly, result in reliability.items()}
         _write_csv(fold_root / "roi_reliability.csv", [record for result in reliability.values()
                                                        for record in result.records()])
