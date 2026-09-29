@@ -7,7 +7,9 @@ stimulus-to-Dm8-response model**. By project convention, these are Dm8 data.
 The recorded `Results.csv` columns are ROI mean intensities, so the numerical
 target is this measured signal rather than a derived ΔF/F trace.
 
-Start with the [complete modeling report](docs/DM8_MODELING_FINAL_REPORT.md).
+Start with the [workspace overview](docs/WORKSPACE_OVERVIEW.md) to see how
+`simulate/`, `Dm8_module/`, and the analysis code connect, then the
+[complete modeling report](docs/DM8_MODELING_FINAL_REPORT.md).
 Its evidence is detailed in the [first-phase results](docs/PHASE1_REPORT.md),
 [validated pixel-model report](docs/PHASE2_REPORT.md), and
 [stimulus provenance and control report](docs/PHASE3_REPORT.md), plus the
@@ -52,29 +54,36 @@ Use Python 3.11 or newer. On macOS:
 python3.12 -m venv .venv
 .venv/bin/python -m pip install -e .
 .venv/bin/python -m unittest discover -s tests -v
-.venv/bin/dm8-model --data-root /Users/irin/Documents/Dm8_module --qc-only
-.venv/bin/dm8-model --data-root /Users/irin/Documents/Dm8_module
-.venv/bin/dm8-model --data-root /Users/irin/Documents/Dm8_module \
+.venv/bin/dm8-model --workspace-root /Users/irin/Documents/dm8_modeling --inventory
+.venv/bin/dm8-model --workspace-root /Users/irin/Documents/dm8_modeling --audit
+.venv/bin/dm8-model --workspace-root /Users/irin/Documents/dm8_modeling --explain-session fly1
+.venv/bin/python scripts/verify_stimulus_provenance.py \
+  --data-root Dm8_module --stimulus-code-root simulate --output-dir outputs/audit
+.venv/bin/dm8-model --workspace-root /Users/irin/Documents/dm8_modeling --qc-only
+.venv/bin/dm8-model --workspace-root /Users/irin/Documents/dm8_modeling
+.venv/bin/dm8-model --workspace-root /Users/irin/Documents/dm8_modeling \
   --response-transform causal_ema_60s --output-dir outputs/ema_exploratory
-.venv/bin/dm8-model --data-root /Users/irin/Documents/Dm8_module \
+.venv/bin/dm8-model --workspace-root /Users/irin/Documents/dm8_modeling \
   --model ridge --output-dir outputs/ridge_raw
-.venv/bin/dm8-model --data-root /Users/irin/Documents/Dm8_module \
+.venv/bin/dm8-model --workspace-root /Users/irin/Documents/dm8_modeling \
   --model pixel --output-dir outputs/pixel_raw
 .venv/bin/python scripts/validate_pixel_model.py --results-dir outputs/pixel_raw
 .venv/bin/python scripts/check_common_mode.py \
-  --data-root /Users/irin/Documents/Dm8_module --results-dir outputs/pixel_raw
-.venv/bin/dm8-predict --data-root /Users/irin/Documents/Dm8_module \
+  --data-root Dm8_module --results-dir outputs/pixel_raw
+.venv/bin/dm8-predict --data-root Dm8_module \
   --model-file outputs/pixel_raw/fly1/20260619_105040/pixel_model.npz \
   --roi Mean29 --output-csv outputs/demo_fly1_Mean29.csv
 .venv/bin/python -m pip install -e '.[deep]'
-.venv/bin/dm8-cnn --data-root /Users/irin/Documents/Dm8_module \
+.venv/bin/dm8-cnn --data-root Dm8_module \
   --baseline-dir outputs/pixel_raw --output-dir outputs/cnn_comparison
-.venv/bin/dm8-cnn-predict --data-root /Users/irin/Documents/Dm8_module \
+.venv/bin/dm8-cnn-predict --data-root Dm8_module \
   --model-file outputs/cnn_comparison/fly1/20260619_105040/cnn_model.pt \
   --roi Mean29 --output-csv outputs/cnn_comparison/fly1_Mean29_replay.csv
 ```
 
-`--data-root` can point to `Dm8_module` or its `UV-15Hz` child. No absolute
+`--workspace-root` points to the containing folder; `--data-root` and
+`--stimulus-code-root` can override the two read-only sources. `--data-root`
+can point to `Dm8_module` or its `UV-15Hz` child. No absolute
 source path is embedded in the software. The command reads every discovered
 `fly*/<run>/Results.csv` session and writes results under
 `outputs/first_pass/`, which Git ignores. Use `--output-dir` to choose another
@@ -147,8 +156,9 @@ a later portion of that sequence; it does not test a new random seed,
 stimulus family, or independent-fly generalization test. The project reports
 these limits without requiring additional data for the graduation deliverable.
 
-The existing `alife_study_exp` repository is an Allen Visual Coding practice
-project. A separate local `07E` experiment-engineering copy contains the
-stimulus generator and playback logic. Its exact June Windows revision is
-unavailable, but every frozen June binary sequence reconstructs from its own
-saved recipe and seed. The frozen arrays in `Dm8_module` remain the model input.
+The experiment-engineering copy is `simulate/07E_260530_01/`. Its exact June
+Windows revision is unavailable, but all eight frozen arrays in every run
+reconstruct from the local 05E generator and each saved recipe. The frozen
+arrays in `Dm8_module` remain the model input. See the [stimulus code audit](docs/STIMULUS_CODE_AUDIT.md),
+[provenance map](docs/STIMULUS_PROVENANCE.md), [pipeline walkthrough](docs/DATA_PIPELINE_WALKTHROUGH.md),
+[full data audit](docs/DATA_AUDIT_REPORT.md), and [baseline regression](docs/BASELINE_REGRESSION.md).

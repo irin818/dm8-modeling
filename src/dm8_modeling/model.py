@@ -7,6 +7,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from .data import AlignedSession
+from .splits import blocked_split
 
 
 @dataclass
@@ -97,11 +98,10 @@ def fit_sta_baseline(
     times = aligned.imaging_time_us[eligible]
     if len(response) < 500:
         raise ValueError(f"Too few imaging frames with complete history: {aligned.session.path}")
-    n_train = int(len(response) * 0.7)
-    gap = max(lag_count, 1)
-    test_start = n_train + gap
-    if test_start >= len(response) - 100:
-        raise ValueError("Not enough test frames after the temporal gap")
+    split = blocked_split(update_index, lag_count, validation=False)
+    n_train = split.train.stop
+    test_start = split.test.start
+    gap = split.purge_validation_test.stop - split.purge_validation_test.start
 
     design = lagged_design(aligned.stimulus, update_index, lag_count)
     train_x = design[:n_train]

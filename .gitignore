@@ -11,3 +11,7 @@ __pycache__/
 data/
 outputs/
 *.zip
+
+# Workspace sources are read-only inputs, not analysis-repository contents.
+Dm8_module/
+simulate/

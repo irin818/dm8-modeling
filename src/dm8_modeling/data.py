@@ -133,6 +133,23 @@ def verify_binary_stimulus_package(recipe: dict, package: dict[str, np.ndarray])
     }
 
 
+def associate_imaging_with_updates(
+    update_times_us: np.ndarray, imaging_times_us: np.ndarray, payload_end_us: int
+) -> tuple[np.ndarray, np.ndarray]:
+    """Map Zeiss frame-out proxies to last preceding displayed update.
+
+    The start is inclusive and the planned payload end (indexed on recorded
+    DLP TTL) is exclusive. The imager's true exposure instant is unknown.
+    """
+    if (update_times_us.ndim != 1 or imaging_times_us.ndim != 1 or
+        len(update_times_us) == 0 or np.any(np.diff(update_times_us) <= 0) or
+        np.any(np.diff(imaging_times_us) <= 0) or payload_end_us <= update_times_us[-1]):
+        raise ValueError("Invalid aligned update/imaging clocks or payload end")
+    index = np.searchsorted(update_times_us, imaging_times_us, side="right") - 1
+    included = (index >= 0) & (imaging_times_us < payload_end_us)
+    return index, included
+
+
 def align_session(session: Session) -> AlignedSession:
     """Use the shared Due clock: locked DLP TTL for stimulus and Zeiss TTL for ROI rows."""
     run = session.path
@@ -168,8 +185,7 @@ def align_session(session: Session) -> AlignedSession:
     update_times = locked_ttl[update_start_frame]
     payload_end_us = int(locked_ttl[payload_end_frame])
     # Exposure time within a Zeiss frame is not supplied. Frame-out TTL is the declared proxy.
-    update_index = np.searchsorted(update_times, zeiss_ttl, side="right") - 1
-    in_payload = (update_index >= 0) & (zeiss_ttl < payload_end_us)
+    update_index, in_payload = associate_imaging_with_updates(update_times, zeiss_ttl, payload_end_us)
     if not np.any(in_payload):
         raise ValueError(f"No Zeiss frames overlap the recorded stimulus payload in {run}")
 
