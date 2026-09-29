@@ -63,11 +63,18 @@ def main() -> None:
             np.savez_compressed(
                 session_output / "pixel_model.npz",
                 coefficients=result.coefficients,
+                intercepts=result.intercepts,
                 selected_pixels=result.selected_pixels,
                 test_actual=result.test_actual,
                 test_predicted=result.test_predicted,
                 test_time_us=result.test_time_us,
                 roi_labels=np.asarray(aligned.roi_labels),
+                fly=np.asarray(session.fly),
+                run_id=np.asarray(session.run_id),
+                lag_count=np.asarray(lag_count),
+                test_start_eligible_frame=np.asarray(result.report["eligible_frames"] - result.report["test_frames"]),
+                stimulus_sha256=np.asarray(aligned.qc["source_sha256"]["stim_realized.npz"]),
+                source_sha256_json=np.asarray(json.dumps(aligned.qc["source_sha256"], sort_keys=True)),
             )
         reports.append(result.report)
         metric_paths.append(session_output / ("pixel_metrics.json" if args.model == "pixel" else "baseline_metrics.json"))

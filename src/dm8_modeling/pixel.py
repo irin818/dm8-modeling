@@ -14,10 +14,48 @@ from .model import _finite_or_none, _scores, lagged_design
 class PixelResult:
     report: dict
     coefficients: np.ndarray  # ROI x lag, raw-intensity units per stimulus unit
+    intercepts: np.ndarray  # ROI, raw-intensity units
     selected_pixels: np.ndarray  # ROI, flattened row-major stimulus pixel
     test_actual: np.ndarray
     test_predicted: np.ndarray
     test_time_us: np.ndarray
+
+
+def predict_pixel_model(
+    stimulus: np.ndarray,
+    update_index: np.ndarray,
+    coefficients: np.ndarray,
+    selected_pixels: np.ndarray,
+    intercepts: np.ndarray,
+) -> np.ndarray:
+    """Predict ROI means from the current and past frozen stimulus updates.
+
+    No response values are read. Callers supply aligned imaging-frame update
+    indices and must ensure they refer to the intended stimulus clock.
+    """
+    stimulus = np.asarray(stimulus)
+    update_index = np.asarray(update_index)
+    coefficients = np.asarray(coefficients)
+    selected_pixels = np.asarray(selected_pixels)
+    intercepts = np.asarray(intercepts)
+    if stimulus.ndim != 2 or update_index.ndim != 1 or coefficients.ndim != 2:
+        raise ValueError("Expected 2-D stimulus and coefficients, 1-D update indices")
+    n_roi, lag_count = coefficients.shape
+    if n_roi == 0 or lag_count == 0 or selected_pixels.shape != (n_roi,) or intercepts.shape != (n_roi,):
+        raise ValueError("ROI coefficient, pixel, and intercept dimensions do not match")
+    if not np.issubdtype(update_index.dtype, np.integer) or not np.issubdtype(selected_pixels.dtype, np.integer):
+        raise ValueError("Update and pixel indices must be integers")
+    if len(update_index) and (np.min(update_index) < lag_count - 1 or np.max(update_index) >= len(stimulus)):
+        raise ValueError("Update indices lack the causal history required by this model")
+    if np.any(selected_pixels < 0) or np.any(selected_pixels >= stimulus.shape[1]):
+        raise ValueError("Selected pixel lies outside stimulus grid")
+    if not np.isfinite(stimulus).all() or not np.isfinite(coefficients).all() or not np.isfinite(intercepts).all():
+        raise ValueError("Model and stimulus must contain finite values")
+    histories = stimulus[
+        update_index[:, None, None] - np.arange(lag_count)[None, :, None],
+        selected_pixels[None, None, :],
+    ]
+    return np.einsum("tlr,rl->tr", histories, coefficients, optimize=True) + intercepts
 
 
 def _fit(x: np.ndarray, y: np.ndarray, penalty: float) -> tuple[np.ndarray, float]:
@@ -71,8 +109,8 @@ def fit_pixel_model(
 ) -> PixelResult:
     """Select location on early 50%, tune on 50-70%, score after a purge.
 
-    The procedure operates on raw ROI mean intensity. It does not establish
-    calcium processing, Dm8 identity, physical wavelength or exposure timing.
+    The project treats these records as Dm8 data. The target is raw ROI mean
+    intensity; physical wavelength and exact exposure timing are not encoded.
     """
     if lag_count < 1 or not penalties or any(value <= 0 for value in penalties):
         raise ValueError("Expected positive lag count and positive ridge penalties")
@@ -105,7 +143,7 @@ def fit_pixel_model(
     validation_selected = np.argmax(np.sum(validation_sta * validation_sta, axis=0), axis=0)
     n_rois = y.shape[1]
     coefficients = np.empty((n_rois, lag_count))
-    prediction = np.empty((n - test_start, n_rois))
+    intercepts = np.empty(n_rois)
     validation_r2 = np.empty(n_rois)
     selected_penalty = np.empty(n_rois)
     fit_indices = np.r_[0:train_end, validation_start:validation_end]
@@ -123,9 +161,12 @@ def fit_pixel_model(
         validation_r2[roi] = trial[best]
         beta, intercept = _fit(x[fit_indices], y[fit_indices, roi], penalties[best])
         coefficients[roi] = beta
-        prediction[:, roi] = x[test_start:] @ beta + intercept
+        intercepts[roi] = intercept
 
     actual = y[test_start:]
+    prediction = predict_pixel_model(
+        aligned.stimulus, update_index[test_start:], coefficients, selected, intercepts,
+    )
     test_r, test_r2 = _scores(actual, prediction)
     baseline = np.broadcast_to(y[fit_indices].mean(axis=0), actual.shape)
     _, baseline_r2 = _scores(actual, baseline)
@@ -179,6 +220,6 @@ def fit_pixel_model(
         "median_test_r": _finite_or_none(np.nanmedian(test_r)),
         "median_test_r2": _finite_or_none(np.nanmedian(test_r2)),
         "roi_metrics": roi_metrics,
-        "interpretation_limit": "Raw ROI intensity only; no verified Dm8 identity or calcium response. The model family was developed after earlier late-block exploratory results had been inspected.",
+        "interpretation_limit": "Project-designated Dm8 data with raw ROI mean intensity as the target. The current results describe this dataset; the model family was developed after earlier late-block exploratory results had been inspected.",
     }
-    return PixelResult(report, coefficients, selected, actual, prediction, times[test_start:])
+    return PixelResult(report, coefficients, intercepts, selected, actual, prediction, times[test_start:])

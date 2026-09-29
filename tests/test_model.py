@@ -5,7 +5,7 @@ import numpy as np
 
 from dm8_modeling.data import AlignedSession, Session, verify_binary_stimulus_package
 from dm8_modeling.model import causal_ema_residual, fit_sta_baseline, lagged_design
-from dm8_modeling.pixel import adjust_pixel_reports, fit_pixel_model
+from dm8_modeling.pixel import adjust_pixel_reports, fit_pixel_model, predict_pixel_model
 from dm8_modeling.ridge import binned_design, fit_binned_ridge
 
 
@@ -128,6 +128,19 @@ class LaggedDesignTests(unittest.TestCase):
         adjust_pixel_reports(reports)
         self.assertAlmostEqual(reports[0]["roi_metrics"][0]["shift_null_q_all_rois"], 0.02)
         self.assertAlmostEqual(reports[1]["roi_metrics"][0]["shift_null_q_all_rois"], 0.2)
+
+    def test_saved_pixel_coefficients_are_sufficient_for_prediction(self):
+        stimulus = np.arange(24, dtype=np.float32).reshape(6, 4)
+        updates = np.array([2, 3, 5])
+        coefficients = np.array([[2.0, -1.0], [0.5, 0.25]])
+        pixels = np.array([1, 3])
+        intercepts = np.array([7.0, 10.0])
+        result = predict_pixel_model(stimulus, updates, coefficients, pixels, intercepts)
+        expected_first = 7 + 2 * stimulus[2, 1] - stimulus[1, 1]
+        expected_second = 10 + 0.5 * stimulus[2, 3] + 0.25 * stimulus[1, 3]
+        np.testing.assert_allclose(result[0], [expected_first, expected_second])
+        with self.assertRaisesRegex(ValueError, "causal history"):
+            predict_pixel_model(stimulus, np.array([0]), coefficients, pixels, intercepts)
 
 
 if __name__ == "__main__":
