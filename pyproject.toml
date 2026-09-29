@@ -9,9 +9,14 @@ description = "Read-only Dm8 data alignment and interpretable stimulus-response 
 requires-python = ">=3.11"
 dependencies = ["numpy>=1.26,<3"]
 
+[project.optional-dependencies]
+deep = ["torch>=2.3,<3"]
+
 [project.scripts]
 dm8-model = "dm8_modeling.cli:main"
 dm8-predict = "dm8_modeling.predict_cli:main"
+dm8-cnn = "dm8_modeling.cnn_cli:main"
+dm8-cnn-predict = "dm8_modeling.cnn_predict_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

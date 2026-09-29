@@ -9,7 +9,8 @@ target is this measured signal rather than a derived ΔF/F trace.
 
 Read the [first-phase results](docs/PHASE1_REPORT.md),
 [validated pixel-model report](docs/PHASE2_REPORT.md), and
-[stimulus provenance and control report](docs/PHASE3_REPORT.md) before
+[stimulus provenance and control report](docs/PHASE3_REPORT.md), plus the
+[compact CNN comparison](docs/PHASE4_CNN_COMPARISON.md), before
 interpreting model output. The [graduation-design guide](docs/GRADUATION_DESIGN_GUIDE.md)
 gives the final presentation path. Most ROIs remain weakly predicted, while
 a subset has a reproducible local stimulus response.
@@ -28,6 +29,10 @@ a subset has a reproducible local stimulus response.
    example ROIs and weak results across the full dataset.
 5. Treat spectral, genotype, and multi-condition models as optional future
    extensions outside this graduation-design deliverable.
+
+The follow-up compact CNN uses the same blocked evaluation as the pixel model.
+It did not improve the overall held-out results; the pixel model remains the
+primary explanation and the CNN is a saved, reproducible comparison.
 
 The first interpretable predictive model is now a train-selected single-pixel
 temporal filter. It provides an auditable local response estimate for the
@@ -60,6 +65,12 @@ python3.12 -m venv .venv
 .venv/bin/dm8-predict --data-root /Users/irin/Documents/Dm8_module \
   --model-file outputs/pixel_raw/fly1/20260619_105040/pixel_model.npz \
   --roi Mean29 --output-csv outputs/demo_fly1_Mean29.csv
+.venv/bin/python -m pip install -e '.[deep]'
+.venv/bin/dm8-cnn --data-root /Users/irin/Documents/Dm8_module \
+  --baseline-dir outputs/pixel_raw --output-dir outputs/cnn_comparison
+.venv/bin/dm8-cnn-predict --data-root /Users/irin/Documents/Dm8_module \
+  --model-file outputs/cnn_comparison/fly1/20260619_105040/cnn_model.pt \
+  --roi Mean29 --output-csv outputs/cnn_comparison/fly1_Mean29_replay.csv
 ```
 
 `--data-root` can point to `Dm8_module` or its `UV-15Hz` child. No absolute
@@ -120,6 +131,11 @@ moving-block bootstrap uses 68-frame blocks and a fixed random seed.
 `scripts/check_common_mode.py` adds an exploratory same-time peer-ROI control
 at `common_mode_control.json`. Because it uses other ROIs' test responses,
 that control is not a stimulus-only predictive model.
+The optional CNN comparison writes per-ROI paired test scores to
+`outputs/cnn_comparison/fly*/<run>/cnn_metrics.json`, weights to `cnn_model.pt`,
+and paired predictions to `cnn_test_predictions.npz`. `dm8-cnn-predict` replays
+one ROI from the stimulus and saved CNN weights. PyTorch is only required for
+these deep-model commands.
 
 This graduation-design model treats the supplied runs as Dm8 data and uses
 raw ROI mean intensity as the target. It does **not** call that target ΔF/F,
