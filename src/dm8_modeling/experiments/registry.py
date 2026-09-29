@@ -1,4 +1,4 @@
-"""Small append-only index of completed Phase 5 experiment artifacts."""
+"""Stable upsert index of completed Phase 5 experiment artifacts."""
 
 from __future__ import annotations
 
@@ -14,8 +14,13 @@ FIELDS = ("experiment_id", "date_utc", "dataset", "fold", "model", "response_kin
 
 def write_registry(rows: list[dict], path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
+    indexed = {}
+    if path.exists():
+        with path.open(newline="") as handle:
+            indexed.update((row["experiment_id"], row) for row in csv.DictReader(handle))
+    indexed.update((row["experiment_id"], row) for row in rows)
     with path.open("w", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=FIELDS)
         writer.writeheader()
-        writer.writerows({field: row.get(field, "") for field in FIELDS} for row in rows)
+        writer.writerows({field: row.get(field, "") for field in FIELDS} for row in indexed.values())
     return path

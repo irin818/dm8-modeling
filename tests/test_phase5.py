@@ -1,6 +1,7 @@
 """Leakage, provenance and interpretable shared-filter regression checks."""
 
 import unittest
+from tempfile import TemporaryDirectory
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -12,9 +13,21 @@ from dm8_modeling.datasets.splits import GlobalStimulusSplit, TRAIN, VALIDATION,
 from dm8_modeling.features import FeatureDefinition
 from dm8_modeling.preprocessing.normalization import fit_response_scaler
 from dm8_modeling.models.population.shared_strf import fit_shared_strf
+from dm8_modeling.experiments.registry import write_registry
 
 
 class Phase5Contracts(unittest.TestCase):
+    def test_registry_preserves_other_models_when_one_is_rerun(self):
+        with TemporaryDirectory() as folder:
+            path = Path(folder) / "registry.csv"
+            write_registry([{"experiment_id": "model_a", "model": "a"},
+                            {"experiment_id": "model_b", "model": "b"}], path)
+            write_registry([{"experiment_id": "model_a", "model": "a_v2"}], path)
+            lines = path.read_text().splitlines()
+            self.assertEqual(len(lines), 3)
+            self.assertIn("model_b", lines[2])
+            self.assertIn("a_v2", lines[1])
+
     def test_global_split_purges_every_causal_history(self):
         split = GlobalStimulusSplit("synthetic", 4, 25, 36, 50)
         updates = np.arange(3, 50)
