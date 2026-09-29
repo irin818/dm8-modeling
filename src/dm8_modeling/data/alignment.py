@@ -7,36 +7,31 @@ from __future__ import annotations
 import json
 import numpy as np
 from .schema import Session, SessionPaths, StimulusData, ResponseData, ClockData, AlignedSession
-from .stimulus import _sha256, verify_binary_stimulus_package
-from .clocks import _read_clock, _read_playback_time, associate_imaging_with_updates
-from .response import _read_results
+from .stimulus import _sha256, load_stimulus_data
+from .clocks import associate_imaging_with_updates, load_clock_data
+from .response import load_response_data
 
 def align_session(session: Session) -> AlignedSession:
-    """Use the shared Due clock: locked DLP TTL for stimulus and Zeiss TTL for ROI rows."""
+    """Return payload AlignedSession on the shared Due microsecond clock.
+
+    Frozen stimulus is [update,pixel] in digital ±1; Results.csv is
+    [imaging frame,ROI] in raw image intensity. Each retained Zeiss frame-out
+    proxy maps to the latest DLP-displayed update, never a future one.
+    """
     run = session.path
     paths = SessionPaths(run)
-    with (paths.stimulus_package / "stim_recipe.json").open() as handle:
-        recipe = json.load(handle)
-    with np.load(paths.stimulus_package / "stim_realized.npz", allow_pickle=False) as package:
-        stimulus_qc = verify_binary_stimulus_package(recipe, package)
-        stimulus = package["stimulus_updates_rc_float32"].reshape(-1, 225)
-        update_start_frame = package["update_start_display_frame_idx_int32"]
-        display_count = len(package["display_frames_gray_uint8"])
-    if stimulus.shape != (9000, 225) or len(update_start_frame) != len(stimulus):
-        raise ValueError(f"Unexpected frozen stimulus dimensions in {run}")
-    stimulus_data = StimulusData(stimulus, update_start_frame, display_count, recipe)
-
-    locked_ttl = _read_clock(paths.locked_dlp_ttl, "timestamp_us")
-    zeiss_files = list(run.glob("zeiss_ttl_*.csv"))
-    if len(zeiss_files) != 1:
-        raise ValueError(f"Expected exactly one Zeiss TTL CSV in {run}")
-    zeiss_ttl = _read_clock(zeiss_files[0], "timestamp_us")
-    response, labels = _read_results(paths.results_csv)
-    response_data = ResponseData(response, tuple(labels), np.arange(len(response), dtype=np.int32))
+    stimulus_data, stimulus_qc = load_stimulus_data(paths)
+    stimulus = stimulus_data.updates
+    update_start_frame = stimulus_data.update_start_display_frame_idx
+    display_count = stimulus_data.display_frame_count
+    clock_data, zeiss_path = load_clock_data(paths)
+    locked_ttl = clock_data.locked_dlp_time_us
+    zeiss_ttl = clock_data.zeiss_frame_out_time_us
+    response_data = load_response_data(paths)
+    response, labels = response_data.values, list(response_data.roi_labels)
     if len(locked_ttl) != display_count or len(zeiss_ttl) != len(response):
         raise ValueError(f"Stimulus/TTL or Results/Zeiss row-count mismatch in {run}")
-    flip_time_s = _read_playback_time(run / "playback" / "stim_frames.csv")
-    clock_data = ClockData(locked_ttl, zeiss_ttl, flip_time_s)
+    flip_time_s = clock_data.playback_flip_time_s
     if len(flip_time_s) != display_count:
         raise ValueError(f"Playback row count does not match frozen stimulus in {run}")
     if np.any(np.diff(update_start_frame) <= 0):
@@ -78,7 +73,7 @@ def align_session(session: Session) -> AlignedSession:
             "dlp_ttl_marker_locked.csv": _sha256(run / "analysis_marker_lock" / "dlp_ttl_marker_locked.csv"),
             "preflight_checklist.json": _sha256(run / "preflight_checklist.json"),
             "offsite_reference_summary.json": _sha256(run / "offsite_analysis" / "ref" / "offsite_reference_summary.json"),
-            zeiss_files[0].name: _sha256(zeiss_files[0]),
+            zeiss_path.name: _sha256(zeiss_path),
         },
         "all_zeiss_frames": int(len(zeiss_ttl)),
         "payload_zeiss_frames": int(in_payload.sum()),

@@ -7,6 +7,7 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 import numpy as np
+from .schema import ClockData, SessionPaths
 
 def _read_clock(path: Path, column: str) -> np.ndarray:
     with path.open(newline="", encoding="utf-8-sig") as handle:
@@ -30,13 +31,28 @@ def _read_playback_time(path: Path) -> np.ndarray:
     return values
 
 
+def load_clock_data(paths: SessionPaths) -> tuple[ClockData, Path]:
+    """Return DLP/Zeiss TTL [microseconds], playback flips [seconds], and Zeiss path."""
+    locked = _read_clock(paths.locked_dlp_ttl, "timestamp_us")
+    zeiss_files = list(paths.root.glob("zeiss_ttl_*.csv"))
+    if len(zeiss_files) != 1:
+        raise ValueError(f"Expected exactly one Zeiss TTL CSV in {paths.root}")
+    zeiss = _read_clock(zeiss_files[0], "timestamp_us")
+    flips = _read_playback_time(paths.root / "playback" / "stim_frames.csv")
+    return ClockData(locked, zeiss, flips), zeiss_files[0]
+
+
 def associate_imaging_with_updates(
     update_times_us: np.ndarray, imaging_times_us: np.ndarray, payload_end_us: int
 ) -> tuple[np.ndarray, np.ndarray]:
     """Map Zeiss frame-out proxies to last preceding displayed update.
 
-    The start is inclusive and the planned payload end (indexed on recorded
-    DLP TTL) is exclusive. The imager's true exposure instant is unknown.
+    `update_times_us` has shape [update] and `imaging_times_us` has shape
+    [imaging frame], both on the acquisition device's microsecond clock.
+    Return `(index, included)` with shape [imaging frame] each. `index[i]`
+    is `max{k: update_times_us[k] <= imaging_times_us[i]}`; `side="right"`
+    makes an exact onset use the already-presented update. The payload start
+    is inclusive and its end is exclusive. True exposure onset is unknown.
     """
     if (update_times_us.ndim != 1 or imaging_times_us.ndim != 1 or
         len(update_times_us) == 0 or np.any(np.diff(update_times_us) <= 0) or

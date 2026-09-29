@@ -13,7 +13,8 @@ from dataclasses import dataclass
 import numpy as np
 
 from ..datasets.splits import TRAIN, VALIDATION
-from ..pixel import _shift_p_values
+from ..rf.null_tests import _shift_p_values
+from ..rf.sta import estimate_reverse_correlation
 
 
 @dataclass(frozen=True)
@@ -28,6 +29,9 @@ class ReliabilityResult:
     validation_pixel_stable: np.ndarray
     train_zero_fraction: np.ndarray
     peak_pixel: np.ndarray
+    first_half_kernel: np.ndarray  # [feature,ROI], TRAIN first half
+    second_half_kernel: np.ndarray  # [feature,ROI], TRAIN second half
+    validation_kernel: np.ndarray  # [feature,ROI], diagnostic only
 
     def records(self) -> list[dict]:
         return [{"fly_id": self.fly_id, "roi_id": label, "train_defined_responsive": bool(self.selected[i]),
@@ -50,7 +54,17 @@ def _column_correlation(left: np.ndarray, right: np.ndarray) -> np.ndarray:
                      out=np.zeros(left.shape[1]), where=denominator > 0)
 
 
-def assess_training_reliability(individual, processed) -> ReliabilityResult:
+def assess_training_reliability(individual, processed, selection: dict | None = None) -> ReliabilityResult:
+    """Estimate TRAIN RF reliability for X [frame,bin*pixel] and y [frame,ROI].
+
+    `selection` contains the thresholds recorded in the experiment config.
+    The validation projection is diagnostic only; TEST responses are unused.
+    """
+    selection = selection or {
+        "train_shift_null_p_below": 0.05,
+        "split_half_kernel_r_above": 0.0,
+        "train_zero_fraction_below": 0.2,
+    }
     train = np.flatnonzero(individual.split_label == TRAIN)
     validation = individual.split_label == VALIDATION
     if len(train) < 200 or not np.any(validation):
@@ -61,11 +75,9 @@ def assess_training_reliability(individual, processed) -> ReliabilityResult:
     x1 = individual.features(first).astype(np.float64)
     x2 = individual.features(second).astype(np.float64)
     xv = individual.features(validation).astype(np.float64)
-    def kernel(x, target):
-        return ((x - x.mean(axis=0)).T @ (target - target.mean(axis=0))) / len(x)
-    k1 = kernel(x1, y[first])
-    k2 = kernel(x2, y[second])
-    kv = kernel(xv, y[validation])
+    k1 = estimate_reverse_correlation(x1, y[first])
+    k2 = estimate_reverse_correlation(x2, y[second])
+    kv = estimate_reverse_correlation(xv, y[validation])
     agreement = _column_correlation(k1, k2)
     projection = (x2 - x2.mean(axis=0)) @ k1
     projection_r = _column_correlation(y[second], projection)
@@ -78,8 +90,10 @@ def assess_training_reliability(individual, processed) -> ReliabilityResult:
     validation_projection_r = _column_correlation(y[validation],
                                                    (xv - xv.mean(axis=0)) @ k1)
     zeros = np.mean(individual.y_raw[first] == 0, axis=0)
-    selected = ((shift_p < .05) & (projection_r > 0) & (agreement > 0) &
-                (zeros < .2))
+    selected = ((shift_p < float(selection["train_shift_null_p_below"])) &
+                (projection_r > 0) &
+                (agreement > float(selection["split_half_kernel_r_above"])) &
+                (zeros < float(selection["train_zero_fraction_below"])))
     return ReliabilityResult(individual.fly_id, individual.roi_labels, selected, agreement,
                              projection_r, shift_p, validation_projection_r,
-                             pixel_stable, zeros, train_peak)
+                             pixel_stable, zeros, train_peak, k1, k2, kv)

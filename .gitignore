@@ -10,6 +10,9 @@ __pycache__/
 !.env.example
 /data/
 outputs/
+/datasets/cache/
+/datasets/*/manifest.json
+/datasets/*/summaries/
 *.zip
 
 # Workspace sources are read-only inputs, not analysis-repository contents.
