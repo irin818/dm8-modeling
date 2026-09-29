@@ -7,9 +7,10 @@ baseline**. The recorded `Results.csv` columns are ROI mean intensities; their
 Dm8 identity and calcium preprocessing have not yet been independently
 verified.
 
-Read the [first-phase results](docs/PHASE1_REPORT.md) and the
-[validated pixel-model report](docs/PHASE2_REPORT.md) before interpreting
-model output. Most ROIs remain weakly predicted, while a subset has a
+Read the [first-phase results](docs/PHASE1_REPORT.md),
+[validated pixel-model report](docs/PHASE2_REPORT.md), and
+[stimulus provenance and control report](docs/PHASE3_REPORT.md) before
+interpreting model output. Most ROIs remain weakly predicted, while a subset has a
 reproducible local stimulus response.
 
 ## Modeling plan
@@ -54,6 +55,8 @@ python3.12 -m venv .venv
 .venv/bin/dm8-model --data-root /Users/irin/Documents/Dm8_module \
   --model pixel --output-dir outputs/pixel_raw
 .venv/bin/python scripts/validate_pixel_model.py --results-dir outputs/pixel_raw
+.venv/bin/python scripts/check_common_mode.py \
+  --data-root /Users/irin/Documents/Dm8_module --results-dir outputs/pixel_raw
 ```
 
 `--data-root` can point to `Dm8_module` or its `UV-15Hz` child. No absolute
@@ -86,6 +89,11 @@ each imaging frame with the most recent stimulus update on the recorded
 acquisition clock, uses only preceding updates, and excludes frames outside
 the stimulus payload. Zeiss frame-out TTL is used as an imaging timestamp
 proxy because the precise within-frame exposure timing was not supplied.
+For these binary runs, the loader independently reconstructs each frozen
+stimulus from its saved seed, checks every update's 0/100 commanded gray
+value against the display frames, and records the saved fly-side orientation
+calibration. These checks validate the digital command, not optical
+wavelength or irradiance at the fly.
 
 ## Outputs and interpretation
 
@@ -104,6 +112,9 @@ five runs. `pixel_model.npz` contains fitted coefficients, test predictions,
 test targets and timestamps. The validation script adds `validation.json` and
 an SVG example figure under the chosen output directory. Its paired
 moving-block bootstrap uses 68-frame blocks and a fixed random seed.
+`scripts/check_common_mode.py` adds an exploratory same-time peer-ROI control
+at `common_mode_control.json`. Because it uses other ROIs' test responses,
+that control is not a stimulus-only predictive model.
 
 This first pass uses raw ROI mean intensity as the target. It does **not**
 label the target as ΔF/F, infer GCaMP or genotype, establish Dm8 cell identity,
@@ -116,5 +127,7 @@ independent-fly generalization test. A dedicated analysis must quantify
 repeat reliability and biological response quality before strong conclusions.
 
 The existing `alife_study_exp` repository is an Allen Visual Coding practice
-project; it does not contain this experiment's stimulus-generation code. The
-frozen stimulus arrays in `Dm8_module` are sufficient for this first pass.
+project. A separate local `07E` experiment-engineering copy contains the
+stimulus generator and playback logic. Its exact June Windows revision is
+unavailable, but every frozen June binary sequence reconstructs from its own
+saved recipe and seed. The frozen arrays in `Dm8_module` remain the model input.
