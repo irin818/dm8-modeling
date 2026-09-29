@@ -5,6 +5,7 @@ import numpy as np
 
 from dm8_modeling.data import AlignedSession, Session
 from dm8_modeling.model import causal_ema_residual, fit_sta_baseline, lagged_design
+from dm8_modeling.pixel import adjust_pixel_reports, fit_pixel_model
 from dm8_modeling.ridge import binned_design, fit_binned_ridge
 
 
@@ -65,6 +66,41 @@ class LaggedDesignTests(unittest.TestCase):
         )
         result = fit_binned_ridge(aligned, bins=1, updates_per_bin=1)
         self.assertGreater(result.report["roi_metrics"][0]["test_r"], 0.7)
+
+    def test_pixel_model_recovers_location_and_lag_without_future_response_leakage(self):
+        rng = np.random.default_rng(42)
+        stimulus = rng.choice([-1.0, 1.0], size=(1800, 225)).astype(np.float32)
+        response = (2 * stimulus[np.maximum(np.arange(1800) - 2, 0), 97]
+                    + 0.5 * rng.normal(size=1800)).astype(np.float32)[:, None]
+        times = np.arange(1800, dtype=np.int64) * 66667
+        aligned = AlignedSession(
+            Session(Path("/unused/fly1/run"), "fly1", "run"),
+            stimulus, np.arange(1800), response, ["Mean1"], times, times,
+            1800 * 66667, {},
+        )
+        result = fit_pixel_model(aligned, lag_count=5)
+        entry = result.report["roi_metrics"][0]
+        self.assertEqual((entry["pixel_row_zero_based"], entry["pixel_col_zero_based"]), (6, 7))
+        self.assertTrue(entry["pixel_stable_train_validation"])
+        self.assertGreater(entry["test_r2"], 0.8)
+        self.assertLess(entry["shift_null_p_two_sided"], 0.01)
+        self.assertEqual(int(np.argmax(np.abs(result.coefficients[0]))), 2)
+
+        future_changed = response.copy()
+        future_changed[1300:] = 100 * rng.normal(size=(500, 1))
+        aligned.response = future_changed
+        changed = fit_pixel_model(aligned, lag_count=5)
+        self.assertEqual(int(changed.selected_pixels[0]), int(result.selected_pixels[0]))
+        self.assertEqual(changed.report["roi_metrics"][0]["selected_penalty"], entry["selected_penalty"])
+
+    def test_fdr_adjusts_across_runs(self):
+        reports = [
+            {"roi_metrics": [{"shift_null_p_two_sided": 0.01}]},
+            {"roi_metrics": [{"shift_null_p_two_sided": 0.2}]},
+        ]
+        adjust_pixel_reports(reports)
+        self.assertAlmostEqual(reports[0]["roi_metrics"][0]["shift_null_q_all_rois"], 0.02)
+        self.assertAlmostEqual(reports[1]["roi_metrics"][0]["shift_null_q_all_rois"], 0.2)
 
 
 if __name__ == "__main__":
