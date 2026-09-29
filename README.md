@@ -1,5 +1,27 @@
 # Dm8 experimental neural encoding
 
+## First time here?
+
+Read [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) first, then the
+[12-stage workflow map](modeling_pipeline/README.md). Follow
+[Stage 01](modeling_pipeline/stage_01_source_audit/README.md) through
+[Stage 12](modeling_pipeline/stage_12_final_analysis/README.md) in numerical
+order. Each Stage points to its `run.py`, source module, configuration, tests,
+and actual output. Then use the [source module map](src/dm8_modeling/README.md)
+to inspect implementation. The [data-flow table](modeling_pipeline/DATA_FLOW.md)
+and [migration map](REORGANIZATION_MAP.md) show the object contracts and old
+paths. `simulate/` and `Dm8_module/` are read-only experiment sources.
+
+To run the complete workflow after installing the package:
+
+```bash
+.venv/bin/dm8-model pipeline run --workspace-root .
+```
+
+All generated datasets and outputs remain local and are ignored by Git.
+The detailed legacy commands below remain valid for reproducing earlier
+reports.
+
 This repository starts a reproducible analysis of the five `UV-15Hz` fly runs
 in `Dm8_module`. It reads the experiment directory without changing it. The
 current graduation-design target is a **usable, explainable single-condition
