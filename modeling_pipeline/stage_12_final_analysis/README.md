@@ -50,7 +50,7 @@ final_analysis.json、stage_manifest.json。
 
 ## 13. 哪些参数可以修改？
 
-reporting.historical_test_is_blind 在 workflow.json；正文维护在 docs。
+本阶段的结论文本在 `docs/FINAL_PREDICTIVE_MODEL_REPORT.md`；当前 Stage 12 没有独立可调的报告参数。
 
 ## 14. 哪些东西不能随便修改？
 

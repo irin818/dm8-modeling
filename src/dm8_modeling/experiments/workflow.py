@@ -69,7 +69,6 @@ def run_stage(number: int, context: WorkflowContext) -> Path:
     """Run exactly one stage; never execute missing earlier stages implicitly."""
     if number < 1 or number > len(STAGE_NAMES):
         raise ValueError("Stage number must be 1 through 12")
-    context.require_previous(number)
     path = context.root / "modeling_pipeline" / STAGE_NAMES[number - 1] / "run.py"
     if not path.is_file():
         raise FileNotFoundError(path)

@@ -32,7 +32,7 @@
 
 | 旧入口或数据 | 当前责任模块 |
 |---|---|
-| 路径散落在调用命令 | `workspace.py`；CLI `--workspace-root`/`--data-root`/`--stimulus-code-root`/`--output-dir` |
+| 路径散落在调用命令 | `workspace/paths.py`；CLI `--workspace-root`/`--data-root`/`--stimulus-code-root`/`--output-dir` |
 | 会话读取及 TTL/响应对齐 | `data/` 包中的 discovery、stimulus、clocks、response、alignment；原导入接口保留 |
 | 可讲解的 X/y 对象 | `pipeline.py`；`model.py:lagged_design` |
 | 候选 F0 / ΔF/F | `preprocessing/fluorescence.py`；训练段尺度在 `normalization.py` |

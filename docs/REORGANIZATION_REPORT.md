@@ -1,5 +1,7 @@
 # Dm8 工作流与源码模块重构报告
 
+> 本文记录首次重构时的状态。后续空文件和重复配置精简的现状见 [PROJECT_SIMPLIFICATION.md](PROJECT_SIMPLIFICATION.md)；下方历史 tree 与兼容文件清单按首次交付时保留。
+
 **任务性质：STRUCTURAL_REFACTOR。**基线是 `origin/main` 的 `d24c7e6`，同时合入当时尚未并入 main 的 Phase 5 分支 `f7e30d0`，以保留五 fly 模型成果。新分支为 `codex/workflow-module-reorganization`。本报告中的数值来自本机 2026-09-30 重跑；生成的清单和详细比较在 Git 忽略的 `outputs/reorganization/`。完整科研结论仍以 `FINAL_PREDICTIVE_MODEL_REPORT.md` 为准。
 
 ## 1. 重构前 tree
@@ -100,7 +102,7 @@ dm8_modeling/
 ## 11–15. 数据集、配置、输出、测试和文档
 
 - `datasets/individual/`：一只 fly/run 一份 `[frame,ROI]` 目标；`datasets/integrated/`：按 fly/ROI/frame 展开的逻辑观测，实际 X 只保存 `[8961,900]` 公共表与索引；`datasets/population/`：每 fly 的训练段选定 ROI 标准化均值。三种对象不可混用。生成 manifest 忽略于 Git。
-- `configs/workflow.json`：源根、结果根、工作流展示默认值；`configs/phase5_first_round.json`：实际两折、4×10 时间特征、响应、RF 筛查阈值、模型惩罚、seed。实验配方中的 9000、15×15、120/15 Hz 是原始事实，不由分析配置改写。
+- `configs/workflow.json`：源根、结果根和 Phase 5 配置路径；`configs/phase5_first_round.json`：实际两折、4×10 时间特征、响应、RF 筛查阈值、模型惩罚、seed。曾重复出现在 workflow 配置中的响应/特征说明值已在后续精简中删除。实验配方中的 9000、15×15、120/15 Hz 是原始事实，不由分析配置改写。
 - `outputs/stage_01_*` 至 `stage_12_*`：每段都有 `stage_manifest.json`、UTC 时间、状态、输入/输出 SHA-256、完整 workflow config 与运行时 Git SHA。Stage 01 输入包括 536 个原始文件与 223 个刺激 Python 文件。旧 `outputs/qc_verified/`、`first_pass/`、`ridge_raw/`、`pixel_raw/`、`cnn_comparison/`、`experiments/phase5_first_round/` 均原位保留。
 - `tests/` 分九类，每类有 README。32 个测试保护 seed/显示更新区别、帧连续、TTL 单调、因果对齐、payload 排他边界、完整历史、全局 split purge、训练段尺度、观测 provenance、模型保存/重播等。
 - `docs/` 保留科研报告；工作流教学位于 `modeling_pipeline/`，源码教学位于 `src/dm8_modeling/**/README.md`，数据对象解释位于顶层 `datasets/README.md`。

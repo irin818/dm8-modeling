@@ -42,7 +42,7 @@ lagged_design；binned_design；build_shared_feature_table。
 
 ## 可调参数
 
-phase5_first_round.json feature；workflow.json 历史 lag；配方定义空间尺寸/刷新。
+`configs/phase5_first_round.json` 定义 Phase 5 的时间特征；旧模型 lag 由旧 CLI 控制；实验配方定义空间尺寸和刷新率。
 
 ## 上游依赖
 

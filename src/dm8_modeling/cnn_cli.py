@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from .cnn import fit_compact_cnn
+from .models.neural.compact_cnn import fit_compact_cnn
 from .data import align_session, discover_sessions
 
 

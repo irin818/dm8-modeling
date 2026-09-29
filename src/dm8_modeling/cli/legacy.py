@@ -9,9 +9,10 @@ from pathlib import Path
 import numpy as np
 
 from ..data import align_session, discover_sessions
-from ..model import fit_sta_baseline
-from ..pixel import adjust_pixel_reports, fit_pixel_model
-from ..ridge import fit_binned_ridge
+from ..rf.sta import fit_sta_baseline
+from ..rf.null_tests import adjust_pixel_reports
+from ..models.linear.pixel_temporal import fit_pixel_model
+from ..models.linear.binned_strf import fit_binned_ridge
 from ..workspace import WorkspacePaths, scan_data_inventory, write_inventory
 
 

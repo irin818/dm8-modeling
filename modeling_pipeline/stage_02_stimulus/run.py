@@ -1,10 +1,9 @@
-"""Stage 02: stimulus. Orchestrate existing source APIs; do not implement algorithms here."""
+"""Stage 02: Verify each saved stimulus package and summarize its digital commands."""
 from __future__ import annotations
-import json
 from pathlib import Path
 from dm8_modeling.experiments.workflow import WorkflowContext
 from dm8_modeling.io.stage_manifest import write_stage_manifest
-from dm8_modeling.io.tables import save_json, save_csv
+from dm8_modeling.io.tables import save_json
 
 from dm8_modeling.data import SessionPaths, discover_sessions, load_stimulus_data
 
@@ -25,11 +24,3 @@ def run(context: WorkflowContext) -> Path:
     summary = save_json(out / "stimulus_summary.json", rows)
     return write_stage_manifest("stage_02_stimulus", out, context.config, inputs, [summary], context.root,
                                 details={"shared_digital_stimulus_verified": True})
-
-
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--workspace-root", type=Path, default=Path.cwd())
-    args = parser.parse_args()
-    print(run(WorkflowContext.load(args.workspace_root)))

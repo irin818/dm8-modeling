@@ -10,7 +10,7 @@ Stage 04 的 AlignedSession。
 
 ## 3. 实际读取哪些文件？
 
-Results.csv 经 Stage 04 加载；configs/workflow.json 与 phase5_first_round.json。
+Results.csv 经 Stage 04 加载；`configs/phase5_first_round.json` 提供响应表示和全局切分。
 
 ## 4. 输入数据对象是什么？
 
@@ -50,7 +50,7 @@ Stage 06 IndividualDataset；Stage 08 RF。
 
 ## 13. 哪些参数可以修改？
 
-response.primary_kind、normalization、ema_tau_seconds 在 workflow.json；fold 边界在 phase5_first_round.json。
+`response.primary_kind`、`response.primary_normalization` 和 fold 边界在 `configs/phase5_first_round.json`。60 秒 EMA 是候选方法的历史固定定义，目前不是独立可调参数。
 
 ## 14. 哪些东西不能随便修改？
 

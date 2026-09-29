@@ -1,10 +1,10 @@
-"""Stage 12: final analysis. Orchestrate existing source APIs; do not implement algorithms here."""
+"""Stage 12: Record the final scientific interpretation and stopping decision."""
 from __future__ import annotations
 import json
 from pathlib import Path
 from dm8_modeling.experiments.workflow import WorkflowContext
 from dm8_modeling.io.stage_manifest import write_stage_manifest
-from dm8_modeling.io.tables import save_json, save_csv
+from dm8_modeling.io.tables import save_json
 
 
 def run(context: WorkflowContext) -> Path:
@@ -21,11 +21,3 @@ def run(context: WorkflowContext) -> Path:
          "interpretation": "Historical exploratory tests; shared models do not consistently beat independent models."})
     return write_stage_manifest("stage_12_final_analysis", out, context.config,
                                 [previous, report], [summary], context.root)
-
-
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--workspace-root", type=Path, default=Path.cwd())
-    args = parser.parse_args()
-    print(run(WorkflowContext.load(args.workspace_root)))

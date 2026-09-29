@@ -1,11 +1,10 @@
-"""Stage 08: rf recovery. Orchestrate existing source APIs; do not implement algorithms here."""
+"""Stage 08: Save training RF estimates and ROI reliability diagnostics."""
 from __future__ import annotations
-import json
 from pathlib import Path
 import numpy as np
 from dm8_modeling.experiments.workflow import WorkflowContext
 from dm8_modeling.io.stage_manifest import write_stage_manifest
-from dm8_modeling.io.tables import save_json, save_csv
+from dm8_modeling.io.tables import save_csv
 
 from dm8_modeling.datasets import load_individual_datasets
 from dm8_modeling.evaluation.reliability import assess_training_reliability
@@ -35,11 +34,3 @@ def run(context: WorkflowContext) -> Path:
         [previous, context.phase5_config_path], [table, *kernel_paths], context.root,
         details={"roi_count": len(records),
                  "train_defined_responsive_count": sum(row["train_defined_responsive"] for row in records)})
-
-
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--workspace-root", type=Path, default=Path.cwd())
-    args = parser.parse_args()
-    print(run(WorkflowContext.load(args.workspace_root)))

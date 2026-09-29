@@ -50,7 +50,7 @@ Stage 09、10 的分层评价。
 
 ## 13. 哪些参数可以修改？
 
-筛查阈值在 phase5_first_round.json；旧 STA lag=45 在 workflow.json。
+筛查阈值与 Phase 5 的 40-update 历史在 `configs/phase5_first_round.json`；旧单 fly STA 的 lag 由旧 CLI 指定，默认 45。
 
 ## 14. 哪些东西不能随便修改？
 

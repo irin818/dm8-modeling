@@ -10,8 +10,8 @@ from pathlib import Path
 import numpy as np
 
 from .data import align_session, discover_sessions
-from .model import _scores
-from .pixel import predict_pixel_model
+from .evaluation.legacy_metrics import _scores
+from .models.linear.pixel_temporal import predict_pixel_model
 
 
 def main() -> None:

@@ -50,7 +50,7 @@ Stage 04 对齐。
 
 ## 13. 哪些参数可以修改？
 
-输入根与响应类型在 configs/workflow.json；ROI 列由文件头定义。
+输入根在 `configs/workflow.json`；响应是 `Results.csv` 的原始 ROI 平均强度，ROI 列由文件头定义。
 
 ## 14. 哪些东西不能随便修改？
 

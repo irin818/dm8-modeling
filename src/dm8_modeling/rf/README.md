@@ -42,7 +42,7 @@ estimate_reverse_correlation；fit_sta_baseline（旧单 fly baseline）；_shif
 
 ## 可调参数
 
-workflow.json sta_lag_updates；null shift exclusion 保留旧实验值。
+Phase 5 的时间特征与筛查阈值在 `configs/phase5_first_round.json`；旧 STA lag 由旧 CLI 控制，null shift exclusion 保留旧实验值。
 
 ## 上游依赖
 
