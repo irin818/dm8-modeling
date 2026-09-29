@@ -9,7 +9,8 @@ target is this measured signal rather than a derived ΔF/F trace.
 
 Start with the [workspace overview](docs/WORKSPACE_OVERVIEW.md) to see how
 `simulate/`, `Dm8_module/`, and the analysis code connect, then the
-[complete modeling report](docs/DM8_MODELING_FINAL_REPORT.md).
+[Phase 5 final predictive report](docs/FINAL_PREDICTIVE_MODEL_REPORT.md).
+The earlier [single-fly report](docs/DM8_MODELING_FINAL_REPORT.md) is retained as historical context.
 Its evidence is detailed in the [first-phase results](docs/PHASE1_REPORT.md),
 [validated pixel-model report](docs/PHASE2_REPORT.md), and
 [stimulus provenance and control report](docs/PHASE3_REPORT.md), plus the
@@ -30,8 +31,9 @@ a subset has a reproducible local stimulus response.
 4. Complete a compact, interpretable model and an independently executable
    prediction demo using the available Dm8 records. Explain both successful
    example ROIs and weak results across the full dataset.
-5. Treat spectral, genotype, and multi-condition models as optional future
-   extensions outside this graduation-design deliverable.
+5. Compare five-fly shared, hierarchical, low-rank and population models on
+   synchronized stimulus folds. Spectral, genotype, and multi-condition
+   models remain outside this graduation-design deliverable.
 
 The follow-up compact CNN uses the same blocked evaluation as the pixel model.
 It did not improve the overall held-out results; the pixel model remains the
@@ -40,6 +42,14 @@ primary explanation and the CNN is a saved, reproducible comparison.
 The first interpretable predictive model is now a train-selected single-pixel
 temporal filter. It provides an auditable local response estimate for the
 current raw ROI target. It makes no spectral or genotype claim.
+
+Phase 5 integrates five flies as biological repeats of **one** saved frozen
+stimulus. The integrated data has 1,907,824 ROI-frame observations, 236 ROIs,
+and 8,961 eligible stimulus-update positions. Shared STRF, hierarchical and
+low-rank models did not consistently improve on independent models. The
+[integrated dataset](docs/INTEGRATED_DATASET.md) and
+[population-model guide](docs/POPULATION_MODELING.md) explain the exact
+representations, model assumptions and limits.
 
 Reverse correlation is a starting estimator, not the final mathematical
 model. The rank-one kernel energy fraction describes an estimated kernel; it
@@ -54,6 +64,11 @@ Use Python 3.11 or newer. On macOS:
 python3.12 -m venv .venv
 .venv/bin/python -m pip install -e .
 .venv/bin/python -m unittest discover -s tests -v
+.venv/bin/dm8-model dataset build-individual --workspace-root .
+.venv/bin/dm8-model dataset build-integrated --workspace-root .
+.venv/bin/dm8-model dataset describe-integrated --workspace-root .
+.venv/bin/dm8-model fit all --workspace-root .
+.venv/bin/dm8-model evaluate --workspace-root .
 .venv/bin/dm8-model --workspace-root /Users/irin/Documents/dm8_modeling --inventory
 .venv/bin/dm8-model --workspace-root /Users/irin/Documents/dm8_modeling --audit
 .venv/bin/dm8-model --workspace-root /Users/irin/Documents/dm8_modeling --explain-session fly1
@@ -93,6 +108,12 @@ to approximately three and 1.2 seconds, respectively. The ridge baseline
 uses its own fixed bin design.
 The optional 60-second exponential baseline subtraction uses only current
 and past responses. It is an exploratory drift-control comparison, not ΔF/F.
+Phase 5 uses `configs/phase5_first_round.json` and writes to Git-ignored
+`outputs/experiments/phase5_first_round/`, including provenance manifests,
+per-ROI metrics, fitted parameters, experiment registry and SVG diagnostics.
+Its full matrix can be run without PyTorch. The Phase 5 folds are exploratory
+because older phases already examined late-block results and the two folds
+overlap in their roles.
 
 ## Inputs and meanings
 
