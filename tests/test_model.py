@@ -3,13 +3,39 @@ from pathlib import Path
 
 import numpy as np
 
-from dm8_modeling.data import AlignedSession, Session
+from dm8_modeling.data import AlignedSession, Session, verify_binary_stimulus_package
 from dm8_modeling.model import causal_ema_residual, fit_sta_baseline, lagged_design
 from dm8_modeling.pixel import adjust_pixel_reports, fit_pixel_model
 from dm8_modeling.ridge import binned_design, fit_binned_ridge
 
 
 class LaggedDesignTests(unittest.TestCase):
+    def test_binary_package_seed_and_display_mapping(self):
+        recipe = {
+            "stimulus_family": "binary_discrete_time",
+            "randomization": {"seed": 17},
+            "family_parameters": {"binary_bright_probability": 0.5},
+            "rendering": {"dark_level": 0, "bright_level": 100, "color_channel": "green"},
+            "geometry": {"summary": {"derived": {
+                "actual_cell_width_deg": 4, "actual_cell_height_deg": 4,
+            }}},
+        }
+        updates = np.where(np.random.RandomState(17).random_sample((3, 2, 2)) < 0.5, 1., -1.).astype(np.float32)
+        gray = np.where(updates > 0, 100, 0).astype(np.uint8)
+        package = {
+            "stimulus_updates_rc_float32": updates,
+            "stimulus_updates_display_gray_uint8": gray,
+            "display_frames_gray_uint8": np.repeat(gray, 2, axis=0),
+            "update_start_display_frame_idx_int32": np.array([0, 2, 4]),
+        }
+        qc = verify_binary_stimulus_package(recipe, package)
+        self.assertTrue(qc["seed_reconstruction_passed"])
+        self.assertEqual(qc["plus_one_commanded_gray"], 100)
+        corrupted = dict(package, stimulus_updates_display_gray_uint8=gray.copy())
+        corrupted["stimulus_updates_display_gray_uint8"][0, 0, 0] = 50
+        with self.assertRaisesRegex(ValueError, "digital gray"):
+            verify_binary_stimulus_package(recipe, corrupted)
+
     def test_current_and_past_updates_only(self):
         stimulus = np.arange(10, dtype=np.float32).reshape(5, 2)
         design = lagged_design(stimulus, np.array([2, 3]), lag_count=2)
@@ -76,11 +102,12 @@ class LaggedDesignTests(unittest.TestCase):
         aligned = AlignedSession(
             Session(Path("/unused/fly1/run"), "fly1", "run"),
             stimulus, np.arange(1800), response, ["Mean1"], times, times,
-            1800 * 66667, {},
+            1800 * 66667, {"fly_side_orientation_calibration": "local_row_col_flip_row_col"},
         )
         result = fit_pixel_model(aligned, lag_count=5)
         entry = result.report["roi_metrics"][0]
         self.assertEqual((entry["pixel_row_zero_based"], entry["pixel_col_zero_based"]), (6, 7))
+        self.assertEqual((entry["fly_side_pixel_row_zero_based"], entry["fly_side_pixel_col_zero_based"]), (8, 7))
         self.assertTrue(entry["pixel_stable_train_validation"])
         self.assertGreater(entry["test_r2"], 0.8)
         self.assertLess(entry["shift_null_p_two_sided"], 0.01)

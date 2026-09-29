@@ -131,6 +131,7 @@ def fit_pixel_model(
     _, baseline_r2 = _scores(actual, baseline)
     exclusion = max(lag_count, 30)
     shift_p = _shift_p_values(actual, prediction, exclusion)
+    orientation = aligned.qc.get("fly_side_orientation_calibration")
     roi_metrics = []
     for roi, label in enumerate(aligned.roi_labels):
         px = int(selected[roi])
@@ -138,6 +139,8 @@ def fit_pixel_model(
             "roi": label,
             "pixel_row_zero_based": px // 15,
             "pixel_col_zero_based": px % 15,
+            "fly_side_pixel_row_zero_based": 14 - px // 15 if orientation == "local_row_col_flip_row_col" else None,
+            "fly_side_pixel_col_zero_based": 14 - px % 15 if orientation == "local_row_col_flip_row_col" else None,
             "validation_best_pixel_row_zero_based": int(validation_selected[roi]) // 15,
             "validation_best_pixel_col_zero_based": int(validation_selected[roi]) % 15,
             "pixel_stable_train_validation": bool(selected[roi] == validation_selected[roi]),
@@ -154,6 +157,9 @@ def fit_pixel_model(
         "method": "train_selected_single_pixel_ridge_temporal_filter",
         "response_kind": "unprocessed_ROI_mean_intensity",
         "stimulus_kind": "frozen_binary_updates_minus1_plus1",
+        "stimulus_plus_one_commanded_gray": aligned.qc.get("plus_one_commanded_gray"),
+        "stimulus_minus_one_commanded_gray": aligned.qc.get("minus_one_commanded_gray"),
+        "fly_side_orientation_calibration": orientation,
         "lag_count": lag_count,
         "history_seconds_nominal": lag_count / 15.0,
         "penalties": list(penalties),
