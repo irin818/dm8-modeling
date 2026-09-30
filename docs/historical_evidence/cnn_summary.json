@@ -1,0 +1,192 @@
+[
+  {
+    "fly": "fly1",
+    "run_id": "20260619_105040",
+    "model": "two_convolution_residual_CNN_with_frozen_pixel_linear_skip",
+    "response_kind": "raw_ROI_mean_intensity",
+    "architecture": "18x15x15 -> conv(4,3x3) -> ELU -> conv(4,3x3) -> ELU -> avgpool(2) -> dense(16) -> ELU -> ROI residual + frozen linear pixel model",
+    "trainable_parameter_count": 4666,
+    "lag_count": 18,
+    "train_frames": 4051,
+    "validation_frames": 1603,
+    "test_frames": 2413,
+    "purge_frames_each": 18,
+    "train_time_us": [
+      17728479,
+      317018838
+    ],
+    "validation_time_us": [
+      318422916,
+      436808876
+    ],
+    "test_time_us": [
+      438212954,
+      616456981
+    ],
+    "max_epochs": 60,
+    "patience": 10,
+    "selected_epoch": 2,
+    "selected_validation_scaled_mse": 1.002440333366394,
+    "batch_size": 256,
+    "learning_rate": 0.001,
+    "weight_decay": 0.001,
+    "seed": 20260929,
+    "median_pixel_test_r2": -0.19557200019245924,
+    "median_cnn_test_r2": -0.19907088891753832,
+    "roi_cnn_better_by_0p01_r2_count": 0,
+    "roi_cnn_worse_by_0p01_r2_count": 10,
+    "interpretation_limit": "The CNN is a flexible benchmark on the existing time split; its residual branch is less directly interpretable than the frozen linear skip. Model-family selection has seen earlier test results."
+  },
+  {
+    "fly": "fly2",
+    "run_id": "20260619_163025",
+    "model": "two_convolution_residual_CNN_with_frozen_pixel_linear_skip",
+    "response_kind": "raw_ROI_mean_intensity",
+    "architecture": "18x15x15 -> conv(4,3x3) -> ELU -> conv(4,3x3) -> ELU -> avgpool(2) -> dense(16) -> ELU -> ROI residual + frozen linear pixel model",
+    "trainable_parameter_count": 4802,
+    "lag_count": 18,
+    "train_frames": 4051,
+    "validation_frames": 1603,
+    "test_frames": 2413,
+    "purge_frames_each": 18,
+    "train_time_us": [
+      17607865,
+      316898149
+    ],
+    "validation_time_us": [
+      318302230,
+      436688163
+    ],
+    "test_time_us": [
+      438092241,
+      616336235
+    ],
+    "max_epochs": 60,
+    "patience": 10,
+    "selected_epoch": 0,
+    "selected_validation_scaled_mse": 1.5311968326568604,
+    "batch_size": 256,
+    "learning_rate": 0.001,
+    "weight_decay": 0.001,
+    "seed": 20260929,
+    "median_pixel_test_r2": -2.239599503911097,
+    "median_cnn_test_r2": -2.239599503911097,
+    "roi_cnn_better_by_0p01_r2_count": 0,
+    "roi_cnn_worse_by_0p01_r2_count": 0,
+    "interpretation_limit": "The CNN is a flexible benchmark on the existing time split; its residual branch is less directly interpretable than the frozen linear skip. Model-family selection has seen earlier test results."
+  },
+  {
+    "fly": "fly3",
+    "run_id": "20260622_221703",
+    "model": "two_convolution_residual_CNN_with_frozen_pixel_linear_skip",
+    "response_kind": "raw_ROI_mean_intensity",
+    "architecture": "18x15x15 -> conv(4,3x3) -> ELU -> conv(4,3x3) -> ELU -> avgpool(2) -> dense(16) -> ELU -> ROI residual + frozen linear pixel model",
+    "trainable_parameter_count": 4802,
+    "lag_count": 18,
+    "train_frames": 4052,
+    "validation_frames": 1602,
+    "test_frames": 2414,
+    "purge_frames_each": 18,
+    "train_time_us": [
+      17640197,
+      317004443
+    ],
+    "validation_time_us": [
+      318408521,
+      436720570
+    ],
+    "test_time_us": [
+      438124648,
+      616442552
+    ],
+    "max_epochs": 60,
+    "patience": 10,
+    "selected_epoch": 13,
+    "selected_validation_scaled_mse": 1.269331932067871,
+    "batch_size": 256,
+    "learning_rate": 0.001,
+    "weight_decay": 0.001,
+    "seed": 20260929,
+    "median_pixel_test_r2": -0.2754525279110549,
+    "median_cnn_test_r2": -0.4150012268018115,
+    "roi_cnn_better_by_0p01_r2_count": 0,
+    "roi_cnn_worse_by_0p01_r2_count": 46,
+    "interpretation_limit": "The CNN is a flexible benchmark on the existing time split; its residual branch is less directly interpretable than the frozen linear skip. Model-family selection has seen earlier test results."
+  },
+  {
+    "fly": "fly4",
+    "run_id": "20260622_230745",
+    "model": "two_convolution_residual_CNN_with_frozen_pixel_linear_skip",
+    "response_kind": "raw_ROI_mean_intensity",
+    "architecture": "18x15x15 -> conv(4,3x3) -> ELU -> conv(4,3x3) -> ELU -> avgpool(2) -> dense(16) -> ELU -> ROI residual + frozen linear pixel model",
+    "trainable_parameter_count": 4768,
+    "lag_count": 18,
+    "train_frames": 4052,
+    "validation_frames": 1602,
+    "test_frames": 2414,
+    "purge_frames_each": 18,
+    "train_time_us": [
+      17833948,
+      317198143
+    ],
+    "validation_time_us": [
+      318602221,
+      436914257
+    ],
+    "test_time_us": [
+      438318335,
+      616636224
+    ],
+    "max_epochs": 60,
+    "patience": 10,
+    "selected_epoch": 2,
+    "selected_validation_scaled_mse": 0.8986012935638428,
+    "batch_size": 256,
+    "learning_rate": 0.001,
+    "weight_decay": 0.001,
+    "seed": 20260929,
+    "median_pixel_test_r2": -0.11768565660358887,
+    "median_cnn_test_r2": -0.11653378692899374,
+    "roi_cnn_better_by_0p01_r2_count": 0,
+    "roi_cnn_worse_by_0p01_r2_count": 0,
+    "interpretation_limit": "The CNN is a flexible benchmark on the existing time split; its residual branch is less directly interpretable than the frozen linear skip. Model-family selection has seen earlier test results."
+  },
+  {
+    "fly": "fly5",
+    "run_id": "20260626_164950",
+    "model": "two_convolution_residual_CNN_with_frozen_pixel_linear_skip",
+    "response_kind": "raw_ROI_mean_intensity",
+    "architecture": "18x15x15 -> conv(4,3x3) -> ELU -> conv(4,3x3) -> ELU -> avgpool(2) -> dense(16) -> ELU -> ROI residual + frozen linear pixel model",
+    "trainable_parameter_count": 4734,
+    "lag_count": 18,
+    "train_frames": 4052,
+    "validation_frames": 1602,
+    "test_frames": 2414,
+    "purge_frames_each": 18,
+    "train_time_us": [
+      17753344,
+      317117535
+    ],
+    "validation_time_us": [
+      318521613,
+      436833649
+    ],
+    "test_time_us": [
+      438237727,
+      616555618
+    ],
+    "max_epochs": 60,
+    "patience": 10,
+    "selected_epoch": 4,
+    "selected_validation_scaled_mse": 1.1138827800750732,
+    "batch_size": 256,
+    "learning_rate": 0.001,
+    "weight_decay": 0.001,
+    "seed": 20260929,
+    "median_pixel_test_r2": -0.018984599127571777,
+    "median_cnn_test_r2": -0.028973813500104195,
+    "roi_cnn_better_by_0p01_r2_count": 4,
+    "roi_cnn_worse_by_0p01_r2_count": 19,
+    "interpretation_limit": "The CNN is a flexible benchmark on the existing time split; its residual branch is less directly interpretable than the frozen linear skip. Model-family selection has seen earlier test results."
+  }
+]

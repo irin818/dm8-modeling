@@ -16,8 +16,7 @@ from ..io.stage_manifest import verify_stage_manifest
 STAGE_NAMES = (
     "stage_01_source_audit", "stage_02_stimulus", "stage_03_response_and_clocks",
     "stage_04_alignment", "stage_05_response_processing", "stage_06_individual_dataset",
-    "stage_07_integrated_dataset", "stage_08_rf_recovery", "stage_09_individual_models",
-    "stage_10_population_models", "stage_11_evaluation", "stage_12_final_analysis",
+    "stage_07_integrated_dataset",
 )
 
 
@@ -68,7 +67,7 @@ class WorkflowContext:
 def run_stage(number: int, context: WorkflowContext) -> Path:
     """Run exactly one stage; never execute missing earlier stages implicitly."""
     if number < 1 or number > len(STAGE_NAMES):
-        raise ValueError("Stage number must be 1 through 12")
+        raise ValueError(f"Stage number must be 1 through {len(STAGE_NAMES)}")
     path = context.root / "modeling_pipeline" / STAGE_NAMES[number - 1] / "run.py"
     if not path.is_file():
         raise FileNotFoundError(path)
