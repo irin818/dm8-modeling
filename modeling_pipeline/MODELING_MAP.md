@@ -1,6 +1,6 @@
 # 当前 RF 与历史模型地图
 
-项目当前处于 **描述性神经生理分析** 阶段。正式入口为 [Phase 6.2](phase_06/README.md)，旧预测实验的科学结论保存在[历史报告](../docs/HISTORICAL_MODELING_CONCLUSIONS.md)，实现已退役。
+项目当前处于 **描述性神经生理分析** 阶段。正式入口为 [Phase 6 工作入口](phase_06/README.md)，最新完成 [Phase 6.3 各 fly 与群体验证](../docs/PHASE6_3_FLY_POPULATION_VALIDATION.md)。旧预测实验的科学结论保存在[历史报告](../docs/HISTORICAL_MODELING_CONCLUSIONS.md)，实现已退役。
 
 | 层级 | 当前作用 | 源码 / 证据 |
 |---|---|---|
@@ -9,6 +9,7 @@
 | Li-style 离线响应 | 固定的主 RF 响应；raw 作敏感性诊断 | `preprocessing/rf_response.py` |
 | 每 ROI 低方差 RF | 40 更新/4×10 箱的带符号反向相关 | `rf/characterization.py`、`experiments/phase62.py` |
 | RF 中心与群体图 | 白噪声导出中心、无环绕对齐、fly 内及 fly 间等权 | `rf/population.py`、[Phase 6.2 报告](../docs/PHASE6_2_POPULATION_RF.md) |
+| 各 fly 与群体内部验证 | 同一估计器，1000 次 raw 共同平移后重做 RF/中心/对齐；符号共识、时间箱、稳定中心分层 | `rf/validation.py`、`experiments/phase63.py`、[Phase 6.3 报告](../docs/PHASE6_3_FLY_POPULATION_VALIDATION.md) |
 | 严格单 ROI RF | Phase 6.1 的独立历史问题：0/236 `RF_RELIABLE` | [Phase 6.1 报告](../docs/PHASE6_1_REPORT.md) |
 | 预测模型 | STA、Pixel、Ridge、CNN、共享、分层、低秩、population-average、预测型 LOFO 均为历史结果 | [历史总结](../docs/HISTORICAL_MODELING_CONCLUSIONS.md)、Git 历史 |
 

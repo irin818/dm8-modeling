@@ -1,0 +1,854 @@
+{
+  "status": "EXPLORATORY INTERNAL VALIDATION",
+  "baseline_commit": "c03dd3e084ad2e4a51a981dea0e36e7fc725131d",
+  "config": {
+    "schema_version": "phase6_3_fly_population_validation_v1",
+    "status": "EXPLORATORY INTERNAL VALIDATION",
+    "baseline_commit": "c03dd3e084ad2e4a51a981dea0e36e7fc725131d",
+    "estimator_config": "configs/phase6_2_population_rf.json",
+    "n_null": 1000,
+    "random_seed": 6320260930,
+    "minimum_shift_seconds": 60.0,
+    "shift_unit": "one_shared_offset_for_all_raw_ROIs_within_each_fly",
+    "independent_offsets_across_flies": true,
+    "null_pipeline": "shift_full_raw_payload_then_recompute_Li_scaling_RF_center_alignment_fly_mean",
+    "primary_null_statistic": "signed_center_zone_mean_negative_tail",
+    "additional_null_statistics": [
+      "center_pixel",
+      "radial_profile",
+      "max_abs_within_center_zone"
+    ],
+    "primary_p_family": "five_fly_center_zone_and_population_center_zone_BH6",
+    "radial_peak_min_lower_edge_px": 2.0,
+    "stable_label": "CENTER_ESTIMATED",
+    "uncertain_label": "CENTER_UNCERTAIN",
+    "sign_consensus": "exact_signed_values_no_posthoc_amplitude_threshold",
+    "population_weighting": "equal_available_fly_after_equal_ROI_within_fly",
+    "stop_after_phase": "6.3"
+  },
+  "estimator": {
+    "schema_version": "phase6_2_population_rf_v1",
+    "analysis_status": "FULL-DATA DESCRIPTIVE ANALYSIS",
+    "primary_response": "li_style_rf_relative",
+    "diagnostic_response": "raw",
+    "gaussian_sigma_seconds": 10.0,
+    "gaussian_truncate_sigma": 3.0,
+    "gaussian_edge_policy": "reflect_and_retain_all_payload_frames",
+    "temporal_bins": 4,
+    "updates_per_bin": 10,
+    "spatial_map": "signed_mean_of_all_four_temporal_bins",
+    "response_normalization": "per_roi_full_payload_standard_deviation",
+    "max_raw_zero_fraction": 0.2,
+    "minimum_response_std": 1e-08,
+    "center_method": "dominant_bin_absolute_peak_then_signed_gaussian_axis_fit",
+    "center_fit_min_quality": 0.05,
+    "center_uncertain_split_distance_px": 2.0,
+    "alignment": "nearest_integer_shift_nan_padding_no_wrap",
+    "roi_aggregation": "equal_weight_within_fly_valid_pixel_mean",
+    "fly_aggregation": "equal_weight_five_fly_valid_pixel_mean",
+    "radial_edges_pixels": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "center_zone_radius_px": 1.5,
+    "surround_zone_inner_px": 3.0,
+    "surround_zone_outer_px": 6.0,
+    "dog_min_same_sign_flies": 4,
+    "dog_require_opposite_center_surround_sign": true,
+    "dog_require_all_lofo_polarities": true,
+    "posthoc_diagnostic_shift_numerators_over_three": [
+      1,
+      2
+    ]
+  },
+  "biological_n": 5,
+  "observed_matches_phase62": true,
+  "fly_results": [
+    {
+      "fly": "fly1",
+      "run_id": "20260619_105040",
+      "total_roi": 42,
+      "technical_roi": 40,
+      "aligned_roi": 40,
+      "stable_roi": 13,
+      "uncertain_roi": 27,
+      "stable_fraction": 0.325,
+      "negative_center_roi_fraction": 0.625,
+      "within_roi_r_before": 0.13173880631473792,
+      "within_roi_r_after": 0.025648868961241734,
+      "split_distance_quantiles_px": [
+        0.3535533905932738,
+        6.202092469861412,
+        9.327262097300064
+      ],
+      "center_zone": -0.0012529257223818132,
+      "surround_zone": 0.0001246198438745949,
+      "center_pixel": -0.009105121599350242,
+      "strongest_center_bin": 1,
+      "center_trajectory": [
+        -0.0034666722876832597,
+        -0.0009112628897910923,
+        -0.0006082840541414124,
+        -2.5483657911487486e-05
+      ],
+      "surround_trajectory": [
+        0.0002253356837426587,
+        0.00014916482936275935,
+        6.461547734693519e-05,
+        5.9363385046026436e-05
+      ],
+      "temporal_center_cancellation": 0.0,
+      "temporal_surround_cancellation": 0.0,
+      "peak_radius_px": 2.5,
+      "peak_amplitude": 0.000685986717482956,
+      "positive_peak_radius_px": 2.5,
+      "positive_peak_amplitude": 0.000685986717482956,
+      "negative_peak_radius_px": 8.5,
+      "negative_peak_amplitude": -0.0003947181006119362,
+      "source_hashes": {
+        "stim_realized.npz": "5788f1b8e21e6808e7567f68647dd35138a685e784fd6c608e30e6c757ea152c",
+        "stim_recipe.json": "4db90650ef88bdb5ee822d81cb91b2d36e6ecf1f43dd02a18a99a222772d35e0",
+        "Results.csv": "911169165f41e4eb2aefdf0d2347d3d5c2f76d8d90426433691debef5910d007",
+        "dlp_ttl_marker_locked.csv": "c4d8e546bbec47f26cf206e86e27d19eb6ebc073d7a0202f7bf2e90ead8ebd5a",
+        "preflight_checklist.json": "bc0228157568d349e72c931f2b8743d006b8915df71f5cb47bad2eeb9f6232fe",
+        "offsite_reference_summary.json": "760761d0df9b731d968d0a494296a9356d5f53d217e0e2ac5933ebae3f1ba220",
+        "zeiss_ttl_20260619_105040.csv": "94dc6281c88bef29c4c3364651cb73b2dc28de9b4673623b269572958067c075"
+      }
+    },
+    {
+      "fly": "fly2",
+      "run_id": "20260619_163025",
+      "total_roi": 50,
+      "technical_roi": 48,
+      "aligned_roi": 48,
+      "stable_roi": 25,
+      "uncertain_roi": 23,
+      "stable_fraction": 0.5208333333333334,
+      "negative_center_roi_fraction": 0.8333333333333334,
+      "within_roi_r_before": 0.2422880613137922,
+      "within_roi_r_after": 0.06991827040535281,
+      "split_distance_quantiles_px": [
+        0.25,
+        0.5590169943749475,
+        6.379623296335111
+      ],
+      "center_zone": -0.0026912826097279007,
+      "surround_zone": -0.00021719191389514778,
+      "center_pixel": -0.012178448414573495,
+      "strongest_center_bin": 1,
+      "center_trajectory": [
+        -0.008477225369031633,
+        -0.001887844279783737,
+        -0.00015973412034725712,
+        -0.0002403266697489744
+      ],
+      "surround_trajectory": [
+        -4.000562156484995e-05,
+        -0.00017470289047157264,
+        -0.00034774757897601435,
+        -0.00030631156456815425
+      ],
+      "temporal_center_cancellation": 0.0,
+      "temporal_surround_cancellation": 0.0,
+      "peak_radius_px": 5.5,
+      "peak_amplitude": -0.0002391660417300526,
+      "positive_peak_radius_px": 7.5,
+      "positive_peak_amplitude": 0.00021706907023856883,
+      "negative_peak_radius_px": 5.5,
+      "negative_peak_amplitude": -0.0002391660417300526,
+      "source_hashes": {
+        "stim_realized.npz": "5788f1b8e21e6808e7567f68647dd35138a685e784fd6c608e30e6c757ea152c",
+        "stim_recipe.json": "de27b48171210c269565e8bc9ce8ca74f939ec54f6198b890c280a3a69840777",
+        "Results.csv": "52d48ef8b284f211a6654312cd0332b3bcba4bbc9a420ac7cc77825ee9bcc3a9",
+        "dlp_ttl_marker_locked.csv": "c940f734b486ce60980de619a87f561b5f4e5a7907474438fe15c5812cf74a09",
+        "preflight_checklist.json": "7991be0b12683d055be28eaf890e31665e7a7db4448960b74d90bd217d018322",
+        "offsite_reference_summary.json": "d994bfbbdbcb34dbf282abb84db41dd87a7d4181d3ed9bb93ebd145524ab119e",
+        "zeiss_ttl_20260619_163025.csv": "59299bd83a09c8bffdc0672511e5bc2de04a485c93a5db98dec5850fa8799683"
+      }
+    },
+    {
+      "fly": "fly3",
+      "run_id": "20260622_221703",
+      "total_roi": 50,
+      "technical_roi": 46,
+      "aligned_roi": 46,
+      "stable_roi": 15,
+      "uncertain_roi": 31,
+      "stable_fraction": 0.32608695652173914,
+      "negative_center_roi_fraction": 0.6086956521739131,
+      "within_roi_r_before": 0.33610515917272904,
+      "within_roi_r_after": 0.0025758637146413737,
+      "split_distance_quantiles_px": [
+        0.6067627457812106,
+        5.531031734578052,
+        9.019111480237758
+      ],
+      "center_zone": -0.0018264659901784024,
+      "surround_zone": -3.0117345298461075e-05,
+      "center_pixel": -0.006168408499473551,
+      "strongest_center_bin": 1,
+      "center_trajectory": [
+        -0.004621061065467629,
+        -0.0018256689692474942,
+        -0.0004989172052972436,
+        -0.0003602167207012432
+      ],
+      "surround_trajectory": [
+        0.00010594012790966628,
+        -5.800817025204694e-05,
+        -0.0002350135994509341,
+        6.66122605994704e-05
+      ],
+      "temporal_center_cancellation": 0.0,
+      "temporal_surround_cancellation": 0.7412455586958115,
+      "peak_radius_px": 6.5,
+      "peak_amplitude": 0.0002237250630186885,
+      "positive_peak_radius_px": 6.5,
+      "positive_peak_amplitude": 0.0002237250630186885,
+      "negative_peak_radius_px": 2.5,
+      "negative_peak_amplitude": -0.00018198253828580023,
+      "source_hashes": {
+        "stim_realized.npz": "5788f1b8e21e6808e7567f68647dd35138a685e784fd6c608e30e6c757ea152c",
+        "stim_recipe.json": "e05ba7bc5b233aa3e6e3b68e7205198571d718bb0e663b6789d9dfc21295e70b",
+        "Results.csv": "533aaa57174a63ca78b933e9ce66dc5b9192d902505802410f874808c24dea30",
+        "dlp_ttl_marker_locked.csv": "c38ade454805240df8da93f44c83ab0e0d4fc5c3eb77ad9be9ff2ff0a06e8c0d",
+        "preflight_checklist.json": "8cd00951b49379eee5be2303d9e419372fa29c09dcb8910672e9fd8551e0f589",
+        "offsite_reference_summary.json": "1a86db960a670b81c70199b52dab5d974e22a95662cfe3d28ec742c935de16fc",
+        "zeiss_ttl_20260622_221703.csv": "3a32f50420271d0e3d9da5d5fac52c141737f5cb56f64cd2c33754f3230c350a"
+      }
+    },
+    {
+      "fly": "fly4",
+      "run_id": "20260622_230745",
+      "total_roi": 48,
+      "technical_roi": 48,
+      "aligned_roi": 48,
+      "stable_roi": 22,
+      "uncertain_roi": 26,
+      "stable_fraction": 0.4583333333333333,
+      "negative_center_roi_fraction": 0.8125,
+      "within_roi_r_before": 0.5188123046110465,
+      "within_roi_r_after": 0.047207303202137535,
+      "split_distance_quantiles_px": [
+        0.3535533905932738,
+        3.223215592731465,
+        9.269891307726107
+      ],
+      "center_zone": -0.0039517569607451205,
+      "surround_zone": -0.0005749880350589581,
+      "center_pixel": -0.011570892917674769,
+      "strongest_center_bin": 1,
+      "center_trajectory": [
+        -0.009164699018946898,
+        -0.003006424038201807,
+        -0.0017753923330727406,
+        -0.0018605124527590377
+      ],
+      "surround_trajectory": [
+        -0.0006392707980924331,
+        -0.0004228734336059353,
+        -0.0006011003887658365,
+        -0.000636707519771627
+      ],
+      "temporal_center_cancellation": 0.0,
+      "temporal_surround_cancellation": 0.0,
+      "peak_radius_px": 2.5,
+      "peak_amplitude": -0.0017076076043434437,
+      "positive_peak_radius_px": 7.5,
+      "positive_peak_amplitude": 0.0005642188079066992,
+      "negative_peak_radius_px": 2.5,
+      "negative_peak_amplitude": -0.0017076076043434437,
+      "source_hashes": {
+        "stim_realized.npz": "5788f1b8e21e6808e7567f68647dd35138a685e784fd6c608e30e6c757ea152c",
+        "stim_recipe.json": "e05ba7bc5b233aa3e6e3b68e7205198571d718bb0e663b6789d9dfc21295e70b",
+        "Results.csv": "962c2e36bb1b99449419ac6b6d23961cbc79fb127f7b531e8b2164bc0d40df17",
+        "dlp_ttl_marker_locked.csv": "fc1555adc66d02ad9189d1f959c37239db0429a24e624f6deb6dc9da1cf52809",
+        "preflight_checklist.json": "8cd00951b49379eee5be2303d9e419372fa29c09dcb8910672e9fd8551e0f589",
+        "offsite_reference_summary.json": "f65a9a6eb3f13a59c3d4714ed93f96e9d7c38254b743d43c502c0243731ce023",
+        "zeiss_ttl_20260622_230745.csv": "08ead2643fa6fe7596ad08e2745a82d00eb54b00634a3ecab86322082d4cc8f9"
+      }
+    },
+    {
+      "fly": "fly5",
+      "run_id": "20260626_164950",
+      "total_roi": 46,
+      "technical_roi": 46,
+      "aligned_roi": 46,
+      "stable_roi": 27,
+      "uncertain_roi": 19,
+      "stable_fraction": 0.5869565217391305,
+      "negative_center_roi_fraction": 0.8043478260869565,
+      "within_roi_r_before": 0.05189857305351489,
+      "within_roi_r_after": 0.08691784453535563,
+      "split_distance_quantiles_px": [
+        0.25,
+        0.6747932047085212,
+        6.460978049368153
+      ],
+      "center_zone": -0.0038249156186149786,
+      "surround_zone": 0.0001299247291122375,
+      "center_pixel": -0.014043936896413194,
+      "strongest_center_bin": 1,
+      "center_trajectory": [
+        -0.008838380220622128,
+        -0.002996781218133507,
+        -0.002140076535449939,
+        -0.0013244245002543415
+      ],
+      "surround_trajectory": [
+        0.00019443426138237953,
+        0.0002500919132708767,
+        0.00011942501076622389,
+        -4.4252268970530204e-05
+      ],
+      "temporal_center_cancellation": 0.0,
+      "temporal_surround_cancellation": 0.14551797971917957,
+      "peak_radius_px": 3.5,
+      "peak_amplitude": 0.00037942916765201383,
+      "positive_peak_radius_px": 3.5,
+      "positive_peak_amplitude": 0.00037942916765201383,
+      "negative_peak_radius_px": 7.5,
+      "negative_peak_amplitude": -3.785187663505539e-05,
+      "source_hashes": {
+        "stim_realized.npz": "5788f1b8e21e6808e7567f68647dd35138a685e784fd6c608e30e6c757ea152c",
+        "stim_recipe.json": "e830f073fc884bc93afd6cc60490849becc6bbd14b3a13086e657734d6e9cb51",
+        "Results.csv": "59c554ec1ce14861a72a83d9343055d84fae5abd405888976c2ccb5ce43eb2df",
+        "dlp_ttl_marker_locked.csv": "888ad60104faee6e89c1b2a7ef700eaed662d6236363bd28d421ed9bb1191782",
+        "preflight_checklist.json": "2b31d0160aa43d0d10690f4693806ff39bde175fa8dee7955fd4dff883430f06",
+        "offsite_reference_summary.json": "5dbb95b962bb42d56ea4eaa319cf65a3d34e18ef0f3369a884fe625080fa523f",
+        "zeiss_ttl_20260626_164950.csv": "f245e6f365620b29f3b4a6ac01346e3453bd7a134c5094ae3772a6ffb74b21b6"
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "fly": "fly1",
+      "r_vs_population": 0.6304095718363562,
+      "r_vs_other_four": 0.4590836008163606,
+      "center_deviation": 0.0014565436579478304,
+      "surround_deviation": 0.0002381703881277418,
+      "radial_r_vs_population": 0.9859241650371222,
+      "radial_r_vs_other_four": 0.9793504840075803,
+      "temporal_center_r_vs_population": 0.9929265066338953,
+      "temporal_surround_r_vs_population": 0.9409997655065644
+    },
+    {
+      "fly": "fly2",
+      "r_vs_population": 0.6998826794076434,
+      "r_vs_other_four": 0.5076945508072361,
+      "center_deviation": 1.8186770601742903e-05,
+      "surround_deviation": -0.00010364136964200087,
+      "radial_r_vs_population": 0.9984939788901641,
+      "radial_r_vs_other_four": 0.9974706917000425,
+      "temporal_center_r_vs_population": 0.9988738521201286,
+      "temporal_surround_r_vs_population": 0.9532478216640483
+    },
+    {
+      "fly": "fly3",
+      "r_vs_population": 0.6568191257305991,
+      "r_vs_other_four": 0.5050087365072422,
+      "center_deviation": 0.0008830033901512412,
+      "surround_deviation": 8.343319895468584e-05,
+      "radial_r_vs_population": 0.9979101624940092,
+      "radial_r_vs_other_four": 0.9973172545375962,
+      "temporal_center_r_vs_population": 0.9906991230732021,
+      "temporal_surround_r_vs_population": 0.5512940926841263
+    },
+    {
+      "fly": "fly4",
+      "r_vs_population": 0.7407165625061007,
+      "r_vs_other_four": 0.4389735937904458,
+      "center_deviation": -0.0012422875804154769,
+      "surround_deviation": -0.00046143749080581123,
+      "radial_r_vs_population": 0.9861465281877776,
+      "radial_r_vs_other_four": 0.9775184010163147,
+      "temporal_center_r_vs_population": 0.9978527995202228,
+      "temporal_surround_r_vs_population": 0.38241460771583263
+    },
+    {
+      "fly": "fly5",
+      "r_vs_population": 0.7589069245693396,
+      "r_vs_other_four": 0.5918713725418605,
+      "center_deviation": -0.001115446238285335,
+      "surround_deviation": 0.00024347527336538442,
+      "radial_r_vs_population": 0.9984105841942013,
+      "radial_r_vs_other_four": 0.9970427220370446,
+      "temporal_center_r_vs_population": 0.9979202713318464,
+      "temporal_surround_r_vs_population": 0.7352100609756829
+    }
+  ],
+  "population": {
+    "center_zone": -0.0027094693803296436,
+    "surround_zone": -0.00011355054425314691,
+    "center_pixel": -0.010613361665497052,
+    "max_central_magnitude": 0.010613361665497052,
+    "radial_profile": [
+      -0.010613361665497052,
+      -0.0017214828446837174,
+      -0.00022418275395231536,
+      6.077421453728222e-05,
+      -0.00016540828052578885,
+      -0.00015039134440929418,
+      0.00017607909069532331,
+      0.00015488752091182196,
+      2.4714175283824877e-05,
+      1.2161445923616923e-05,
+      null
+    ]
+  },
+  "primary_null_tests": [
+    {
+      "unit": "fly1",
+      "observed_center_zone": -0.0012529257223818132,
+      "center_zone_p_negative": 0.001998001998001998,
+      "center_zone_q_BH6": 0.001998001998001998,
+      "null_center_zone_low": -0.0008164643446529583,
+      "null_center_zone_median": -2.441541796668082e-05,
+      "null_center_zone_high": 0.00077562587301696,
+      "center_pixel_p_negative": 0.000999000999000999,
+      "max_central_p_magnitude": 0.000999000999000999,
+      "n_valid_null": 1000
+    },
+    {
+      "unit": "fly2",
+      "observed_center_zone": -0.0026912826097279007,
+      "center_zone_p_negative": 0.000999000999000999,
+      "center_zone_q_BH6": 0.0011988011988011988,
+      "null_center_zone_low": -0.0008162165675679623,
+      "null_center_zone_median": 1.9317760782608506e-05,
+      "null_center_zone_high": 0.0008135557872464624,
+      "center_pixel_p_negative": 0.000999000999000999,
+      "max_central_p_magnitude": 0.000999000999000999,
+      "n_valid_null": 1000
+    },
+    {
+      "unit": "fly3",
+      "observed_center_zone": -0.0018264659901784024,
+      "center_zone_p_negative": 0.000999000999000999,
+      "center_zone_q_BH6": 0.0011988011988011988,
+      "null_center_zone_low": -0.0006610500541777998,
+      "null_center_zone_median": -1.2667642707850007e-05,
+      "null_center_zone_high": 0.0006544343468337553,
+      "center_pixel_p_negative": 0.000999000999000999,
+      "max_central_p_magnitude": 0.000999000999000999,
+      "n_valid_null": 1000
+    },
+    {
+      "unit": "fly4",
+      "observed_center_zone": -0.0039517569607451205,
+      "center_zone_p_negative": 0.000999000999000999,
+      "center_zone_q_BH6": 0.0011988011988011988,
+      "null_center_zone_low": -0.0015013994208149105,
+      "null_center_zone_median": 3.9617797246436725e-05,
+      "null_center_zone_high": 0.00148222231422762,
+      "center_pixel_p_negative": 0.007992007992007992,
+      "max_central_p_magnitude": 0.022977022977022976,
+      "n_valid_null": 1000
+    },
+    {
+      "unit": "fly5",
+      "observed_center_zone": -0.0038249156186149786,
+      "center_zone_p_negative": 0.000999000999000999,
+      "center_zone_q_BH6": 0.0011988011988011988,
+      "null_center_zone_low": -0.000711606710523225,
+      "null_center_zone_median": -2.6914226520846128e-05,
+      "null_center_zone_high": 0.0006843745354287061,
+      "center_pixel_p_negative": 0.000999000999000999,
+      "max_central_p_magnitude": 0.000999000999000999,
+      "n_valid_null": 1000
+    },
+    {
+      "unit": "population",
+      "observed_center_zone": -0.0027094693803296436,
+      "center_zone_p_negative": 0.000999000999000999,
+      "center_zone_q_BH6": 0.0011988011988011988,
+      "null_center_zone_low": -0.0004103329097981461,
+      "null_center_zone_median": -6.619582159651656e-06,
+      "null_center_zone_high": 0.0004167816594882525,
+      "center_pixel_p_negative": 0.000999000999000999,
+      "max_central_p_magnitude": 0.000999000999000999,
+      "n_valid_null": 1000
+    }
+  ],
+  "null_5_negative_count": 25,
+  "null_5_negative_frequency": 0.025,
+  "null_5_negative_p_plus_one": 0.025974025974025976,
+  "null_negative_count_histogram": [
+    23,
+    161,
+    305,
+    325,
+    161,
+    25
+  ],
+  "null_population_min_fly_count": 4,
+  "null_center_reestimated_changes": [
+    39,
+    47,
+    45,
+    46,
+    45
+  ],
+  "null_unique_shifts_per_fly": [
+    920,
+    929,
+    944,
+    932,
+    924
+  ],
+  "null_roi_count_ranges": [
+    [
+      39,
+      40
+    ],
+    [
+      46,
+      48
+    ],
+    [
+      45,
+      46
+    ],
+    [
+      46,
+      48
+    ],
+    [
+      45,
+      46
+    ]
+  ],
+  "consensus_pixel_counts": {
+    "-5": 17,
+    "-4": 38,
+    "-3": 54,
+    "0": 0,
+    "3": 66,
+    "4": 36,
+    "5": 14
+  },
+  "zone_temporal_summary": [
+    {
+      "temporal_bin": 0,
+      "zone": "center",
+      "fly1": -0.0012529257223818132,
+      "fly2": -0.0026912826097279007,
+      "fly3": -0.0018264659901784024,
+      "fly4": -0.0039517569607451205,
+      "fly5": -0.0038249156186149786,
+      "mean": -0.0027094693803296427,
+      "sd_between_flies": 0.0011925858371738905,
+      "minimum": -0.0039517569607451205,
+      "maximum": -0.0012529257223818132,
+      "negative_flies": 5,
+      "positive_flies": 0,
+      "cross_fly_cancellation": 0.0
+    },
+    {
+      "temporal_bin": 0,
+      "zone": "surround",
+      "fly1": 0.0001246198438745949,
+      "fly2": -0.00021719191389514778,
+      "fly3": -3.0117345298461075e-05,
+      "fly4": -0.0005749880350589581,
+      "fly5": 0.0001299247291122375,
+      "mean": -0.00011355054425314691,
+      "sd_between_flies": 0.0002943775350767756,
+      "minimum": -0.0005749880350589581,
+      "maximum": 0.0001299247291122375,
+      "negative_flies": 3,
+      "positive_flies": 2,
+      "cross_fly_cancellation": 0.4727612859990018
+    },
+    {
+      "temporal_bin": 1,
+      "zone": "center",
+      "fly1": -0.0034666722876832597,
+      "fly2": -0.008477225369031633,
+      "fly3": -0.004621061065467629,
+      "fly4": -0.009164699018946898,
+      "fly5": -0.008838380220622128,
+      "mean": -0.00691360759235031,
+      "sd_between_flies": 0.002662432882040263,
+      "minimum": -0.009164699018946898,
+      "maximum": -0.0034666722876832597,
+      "negative_flies": 5,
+      "positive_flies": 0,
+      "cross_fly_cancellation": 0.0
+    },
+    {
+      "temporal_bin": 1,
+      "zone": "surround",
+      "fly1": 0.0002253356837426587,
+      "fly2": -4.000562156484995e-05,
+      "fly3": 0.00010594012790966628,
+      "fly4": -0.0006392707980924331,
+      "fly5": 0.00019443426138237953,
+      "mean": -3.071326932451572e-05,
+      "sd_between_flies": 0.0003554417116617451,
+      "minimum": -0.0006392707980924331,
+      "maximum": 0.0002253356837426587,
+      "negative_flies": 2,
+      "positive_flies": 3,
+      "cross_fly_cancellation": 0.8725576198953855
+    },
+    {
+      "temporal_bin": 2,
+      "zone": "center",
+      "fly1": -0.0009112628897910923,
+      "fly2": -0.001887844279783737,
+      "fly3": -0.0018256689692474942,
+      "fly4": -0.003006424038201807,
+      "fly5": -0.002996781218133507,
+      "mean": -0.0021255962790315275,
+      "sd_between_flies": 0.000888243874728082,
+      "minimum": -0.003006424038201807,
+      "maximum": -0.0009112628897910923,
+      "negative_flies": 5,
+      "positive_flies": 0,
+      "cross_fly_cancellation": 0.0
+    },
+    {
+      "temporal_bin": 2,
+      "zone": "surround",
+      "fly1": 0.00014916482936275935,
+      "fly2": -0.00017470289047157264,
+      "fly3": -5.800817025204694e-05,
+      "fly4": -0.0004228734336059353,
+      "fly5": 0.0002500919132708767,
+      "mean": -5.126555033918376e-05,
+      "sd_between_flies": 0.0002666286353475551,
+      "minimum": -0.0004228734336059353,
+      "maximum": 0.0002500919132708767,
+      "negative_flies": 3,
+      "positive_flies": 2,
+      "cross_fly_cancellation": 0.7569987380907981
+    },
+    {
+      "temporal_bin": 3,
+      "zone": "center",
+      "fly1": -0.0006082840541414124,
+      "fly2": -0.00015973412034725712,
+      "fly3": -0.0004989172052972436,
+      "fly4": -0.0017753923330727406,
+      "fly5": -0.002140076535449939,
+      "mean": -0.0010364808496617184,
+      "sd_between_flies": 0.0008667360631713282,
+      "minimum": -0.002140076535449939,
+      "maximum": -0.00015973412034725712,
+      "negative_flies": 5,
+      "positive_flies": 0,
+      "cross_fly_cancellation": 0.0
+    },
+    {
+      "temporal_bin": 3,
+      "zone": "surround",
+      "fly1": 6.461547734693519e-05,
+      "fly2": -0.00034774757897601435,
+      "fly3": -0.0002350135994509341,
+      "fly4": -0.0006011003887658365,
+      "fly5": 0.00011942501076622389,
+      "mean": -0.0001999642158159252,
+      "sd_between_flies": 0.0002983246985500441,
+      "minimum": -0.0006011003887658365,
+      "maximum": 0.00011942501076622389,
+      "negative_flies": 3,
+      "positive_flies": 2,
+      "cross_fly_cancellation": 0.2690843067298361
+    },
+    {
+      "temporal_bin": 4,
+      "zone": "center",
+      "fly1": -2.5483657911487486e-05,
+      "fly2": -0.0002403266697489744,
+      "fly3": -0.0003602167207012432,
+      "fly4": -0.0018605124527590377,
+      "fly5": -0.0013244245002543415,
+      "mean": -0.0007621928002750168,
+      "sd_between_flies": 0.0007904239259213997,
+      "minimum": -0.0018605124527590377,
+      "maximum": -2.5483657911487486e-05,
+      "negative_flies": 5,
+      "positive_flies": 0,
+      "cross_fly_cancellation": 0.0
+    },
+    {
+      "temporal_bin": 4,
+      "zone": "surround",
+      "fly1": 5.9363385046026436e-05,
+      "fly2": -0.00030631156456815425,
+      "fly3": 6.66122605994704e-05,
+      "fly4": -0.000636707519771627,
+      "fly5": -4.4252268970530204e-05,
+      "mean": -0.00017225914153296294,
+      "sd_between_flies": 0.00030032342947599645,
+      "minimum": -0.000636707519771627,
+      "maximum": 6.66122605994704e-05,
+      "negative_flies": 3,
+      "positive_flies": 2,
+      "cross_fly_cancellation": 0.22632110531383975
+    }
+  ],
+  "center_groups": [
+    {
+      "unit": "fly1",
+      "group": "ALL",
+      "center_zone": -0.0012529257223818132,
+      "surround_zone": 0.0001246198438745949,
+      "center_pixel": -0.009105121599350242,
+      "valid_flies": 1
+    },
+    {
+      "unit": "fly2",
+      "group": "ALL",
+      "center_zone": -0.0026912826097279007,
+      "surround_zone": -0.00021719191389514778,
+      "center_pixel": -0.012178448414573495,
+      "valid_flies": 1
+    },
+    {
+      "unit": "fly3",
+      "group": "ALL",
+      "center_zone": -0.0018264659901784024,
+      "surround_zone": -3.0117345298461075e-05,
+      "center_pixel": -0.006168408499473551,
+      "valid_flies": 1
+    },
+    {
+      "unit": "fly4",
+      "group": "ALL",
+      "center_zone": -0.0039517569607451205,
+      "surround_zone": -0.0005749880350589581,
+      "center_pixel": -0.011570892917674769,
+      "valid_flies": 1
+    },
+    {
+      "unit": "fly5",
+      "group": "ALL",
+      "center_zone": -0.0038249156186149786,
+      "surround_zone": 0.0001299247291122375,
+      "center_pixel": -0.014043936896413194,
+      "valid_flies": 1
+    },
+    {
+      "unit": "population",
+      "group": "ALL",
+      "center_zone": -0.002709469380329643,
+      "surround_zone": -0.00011355054425314691,
+      "center_pixel": -0.010613361665497048,
+      "valid_flies": 5
+    },
+    {
+      "unit": "fly1",
+      "group": "STABLE",
+      "center_zone": -0.004354968682903252,
+      "surround_zone": 0.00011108586965269416,
+      "center_pixel": -0.026362203371088702,
+      "valid_flies": 1
+    },
+    {
+      "unit": "fly2",
+      "group": "STABLE",
+      "center_zone": -0.004129538976691644,
+      "surround_zone": -0.00020209435509287033,
+      "center_pixel": -0.019871088011586834,
+      "valid_flies": 1
+    },
+    {
+      "unit": "fly3",
+      "group": "STABLE",
+      "center_zone": -0.004905844797275871,
+      "surround_zone": -0.0002464411366939277,
+      "center_pixel": -0.017444619051821063,
+      "valid_flies": 1
+    },
+    {
+      "unit": "fly4",
+      "group": "STABLE",
+      "center_zone": -0.005846000800772554,
+      "surround_zone": -0.00032593572445046594,
+      "center_pixel": -0.02184882160092498,
+      "valid_flies": 1
+    },
+    {
+      "unit": "fly5",
+      "group": "STABLE",
+      "center_zone": -0.005817423482601562,
+      "surround_zone": 6.113551390449175e-05,
+      "center_pixel": -0.02122058224596104,
+      "valid_flies": 1
+    },
+    {
+      "unit": "population",
+      "group": "STABLE",
+      "center_zone": -0.005010755348048976,
+      "surround_zone": -0.00012044996653601558,
+      "center_pixel": -0.021349462856276525,
+      "valid_flies": 5
+    },
+    {
+      "unit": "fly1",
+      "group": "UNCERTAIN",
+      "center_zone": 0.0002616654066557763,
+      "surround_zone": 0.0001630614626378342,
+      "center_pixel": -0.000796156301846538,
+      "valid_flies": 1
+    },
+    {
+      "unit": "fly2",
+      "group": "UNCERTAIN",
+      "center_zone": -0.0011025966386100316,
+      "surround_zone": -0.00022696012084500388,
+      "center_pixel": -0.0038168836352111693,
+      "valid_flies": 1
+    },
+    {
+      "unit": "fly3",
+      "group": "UNCERTAIN",
+      "center_zone": -0.0001987285271705459,
+      "surround_zone": 9.680634277914995e-05,
+      "center_pixel": -0.0007121775870473357,
+      "valid_flies": 1
+    },
+    {
+      "unit": "fly4",
+      "group": "UNCERTAIN",
+      "center_zone": -0.0022917400696123975,
+      "surround_zone": -0.0008197294954378701,
+      "center_pixel": -0.0028741840318476674,
+      "valid_flies": 1
+    },
+    {
+      "unit": "fly5",
+      "group": "UNCERTAIN",
+      "center_zone": -0.0009425419937085595,
+      "surround_zone": 0.0002658416155622298,
+      "center_pixel": -0.0038455461365294085,
+      "valid_flies": 1
+    },
+    {
+      "unit": "population",
+      "group": "UNCERTAIN",
+      "center_zone": -0.0008547883644891515,
+      "surround_zone": -0.000104196039060732,
+      "center_pixel": -0.0024089895384964235,
+      "valid_flies": 5
+    }
+  ],
+  "fly4_influence": {
+    "with_center": -0.0027094693803296436,
+    "without_center": -0.0023988974852257737,
+    "with_surround": -0.00011355054425314691,
+    "without_surround": 1.8088284483058647e-06
+  }
+}
