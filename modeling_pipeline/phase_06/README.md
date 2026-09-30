@@ -7,6 +7,7 @@
 | `run_population.py` | Phase 6.2 五 fly 描述性 RF、留一 fly 稳定性 | 各记录全部可用白噪声；无独立验证 | [主报告](../../docs/PHASE6_2_POPULATION_RF.md) |
 | `run_validation.py` | Phase 6.3 各 fly 共性/异质性、时间箱、中心分层与完整零模型 | 全记录；EXPLORATORY INTERNAL VALIDATION | [验证报告](../../docs/PHASE6_3_FLY_POPULATION_VALIDATION.md) |
 | `run_dog_test.py` | Phase 6.4 冻结 RF 的 M0/M1/M2/M3 空间结构检验 | 只读 6.3 图和 1000 次 null；不重算 RF | [结构检验报告](../../docs/PHASE6_4_GAUSSIAN_DOG_TEST.md) |
+| `run_li_equivalence_audit.py` | Phase 6.5 Li 来源/流程等价与 C0–C7 消融 | 完整五 fly 描述性记录、40 lag、500 次 C7 完整 null | [方法审计报告](../../docs/PHASE6_5_LI_EQUIVALENCE_REPORT.md) |
 
 Phase 6.1 的严格纳入门槛未通过，因而**没有**建立确认性的 RF-centered 新刺激数据集。Phase 6.2 是另一个明确标记为全数据描述性的研究问题：仅排除技术无效 ROI，先每 ROI 建粗时间 RF，再按 fly 层级平均。这不推翻 Phase 6.1，也不能将本轮群体图用于声明单 ROI 显著性。
 
@@ -28,4 +29,11 @@ OPENBLAS_NUM_THREADS=2 .venv/bin/python modeling_pipeline/phase_06/run_validatio
 OPENBLAS_NUM_THREADS=2 .venv/bin/python modeling_pipeline/phase_06/run_dog_test.py --workspace-root .
 ```
 
-固定配置在 [`phase6_4_dog_test.json`](../../configs/phase6_4_dog_test.json)，表与图写到 [`phase6_4_results/`](../../docs/phase6_4_results/)。6.4 完成后停止，不自动增加预测或机制模型。
+固定配置在 [`phase6_4_dog_test.json`](../../configs/phase6_4_dog_test.json)，表与图写到 [`phase6_4_results/`](../../docs/phase6_4_results/)。Phase 6.5 新建独立目录，不覆盖此前结果：
+
+```bash
+OPENBLAS_NUM_THREADS=2 .venv/bin/python modeling_pipeline/phase_06/run_li_equivalence_audit.py --workspace-root .
+OPENBLAS_NUM_THREADS=2 .venv/bin/python modeling_pipeline/phase_06/run_li_equivalence_audit.py --workspace-root . --final-null
+```
+
+配置为 [`phase6_5_li_equivalence.json`](../../configs/phase6_5_li_equivalence.json)。先运行主分析，再运行最终 null；表/图写到 `docs/phase6_5_results/` 与 `docs/phase6_5_figures/`。本阶段后停止，不自动增加预测或机制模型。
