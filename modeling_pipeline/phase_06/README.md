@@ -13,3 +13,5 @@ OPENBLAS_NUM_THREADS=2 .venv/bin/python modeling_pipeline/phase_06/run.py --work
 | C | B 的 TRAIN RF 与预设门槛 | 1D Gaussian 中心、split-half 位移、仅可靠 ROI 的中心对齐 | `outputs/phase_06/alignment/`：中心图、分类、均值 RF、相似度/Gate、manifest |
 
 Phase 6 目前没有 `RF_RELIABLE` ROI；均值 RF 标记为缺失，不以零数组代表真实 RF。Gate A/B 不通过时停止 Phase 6.2。每个 manifest 保存声明输入/输出的 SHA-256 及 Git 提交。阅读顺序：[证据与假设](../../docs/PHASE6_ASSUMPTIONS.md) → [响应重建](../../docs/PHASE6_RESPONSE_RECONSTRUCTION.md) → [RF 可靠性与中心](../../docs/PHASE6_RF_RELIABILITY.md) → [运行报告](../../docs/PHASE6_1_REPORT.md) → `run.py` → `src/dm8_modeling/experiments/phase6.py`。
+
+后续 Phase 6.1b 的 TRAIN-only 方法/功效审计从 `run_method_audit.py` 单独运行，结果写入 `outputs/phase_06/rf_method_audit/`；详见 [审计报告](../../docs/PHASE6_1B_RF_METHOD_AUDIT.md)。
