@@ -2,6 +2,8 @@
 
 **运行日期**：2026-09-30。**输入**：五只 fly、236 列 `MeanN`、同一条已保存的 9,000 更新数字刺激。**结论**：Phase 6.1 的计算链已完成并验证，但按事先固定的多重检验和中心稳定规则，**0/236 ROI 达到 `RF_RELIABLE`**；Gate A/B 不通过，暂不进入 Phase 6.2，也不增加深度模型。完整机器可读结果在 Git 忽略的 `outputs/phase_06/`。
 
+**后续方法审计**：[Phase 6.1b RF 时间表示、功效与检验家族](PHASE6_1B_RF_METHOD_AUDIT.md) 已作为探索性重分析单独记录，不改变本报告的历史结论。
+
 ## 1. 项目阶段与历史保留
 
 Phase 1–5 和原 Stage 01–12 现为 `HISTORICAL / LEGACY BASELINE`：STA 预测基线、旧 Ridge/Pixel、compact CNN、绝对坐标 Shared/Hierarchical STRF、shared basis、population-average 路径都不再是新研究默认入口。Phase 6.1 从独立的 `modeling_pipeline/phase_06/run.py` 运行；新代码不调用旧预测模型。旧报告、模型比较表、保存权重、命令兼容层、回放和回归检查仍保留，以便毕业设计解释科学过程，也避免把历史负结果抹掉。Stage 08 旧训练段响应性表只用于方法对照，不向新分类提供 ROI 白名单。
