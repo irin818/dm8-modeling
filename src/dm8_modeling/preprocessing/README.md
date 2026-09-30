@@ -1,5 +1,7 @@
 # preprocessing/ 模块说明
 
+Phase 6.1 另有 [`rf_response.py`](rf_response.py)：10 秒 Gaussian 离线基线相减，明确标记 **NON-CAUSAL / OFFLINE RF CHARACTERIZATION ONLY**。`fluorescence.py` 中的 raw、causal EMA、causal block-median 作为 TRAIN RF 对照和未来预测候选；选法见 [Phase 6.1 响应文档](../../../docs/PHASE6_RESPONSE_RECONSTRUCTION.md)。
+
 ## 模块目的
 
 把原始 ROI 强度变成显式命名的响应表示，并只在训练段拟合尺度。

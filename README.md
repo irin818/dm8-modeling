@@ -1,5 +1,7 @@
 # Dm8 experimental neural encoding
 
+**Current active work (Phase 6.1):** [response reconstruction and TRAIN-only RF characterization](docs/PHASE6_1_REPORT.md). Run `OPENBLAS_NUM_THREADS=2 .venv/bin/python modeling_pipeline/phase_06/run.py --workspace-root .` after preparing the historical Stage 07 manifest. Phase 1–5 and Stage 01–12 below remain reproducible historical baselines. The prespecified Phase 6.1 gate found no `RF_RELIABLE` ROI, so the RF-centered dataset and later deep models have not been started.
+
 ## First time here?
 
 Read [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) first, then the
@@ -41,7 +43,7 @@ interpreting model output. The [graduation-design guide](docs/GRADUATION_DESIGN_
 gives the final presentation path. Most ROIs remain weakly predicted, while
 a subset has a reproducible local stimulus response.
 
-## Modeling plan
+## Historical modeling plan (Phases 1–5)
 
 1. Verify source files, their clocks, ROI tables, and stimulus arrays.
 2. Align frozen 15 Hz stimulus updates to Zeiss imaging frames using the
