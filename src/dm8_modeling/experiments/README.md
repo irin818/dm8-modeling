@@ -1,5 +1,7 @@
 # experiments/ 模块说明
 
+当前 [`phase6.py`](phase6.py) 独立编排 TRAIN-only 响应、RF 可靠性和中心 Gate；历史 `runner.py` 仍供 Phase 5 模型重播。[Phase 6.1 报告](../../../docs/PHASE6_1_REPORT.md) 记录为何暂不进入新预测模型。
+
 ## 模块目的
 
 统一配置、训练矩阵、LOFO 适配、运行记录和逐阶段顺序。

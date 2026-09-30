@@ -1,5 +1,7 @@
 # Dm8 建模主线：先看工作流，再看模块
 
+**当前研究入口**：[Phase 6.1 响应与 RF](phase_06/README.md)；下面的 Stage 01–12 是 Phase 1–5 **HISTORICAL** 流程，继续保留完整复算、旧模型重播和教学记录。Phase 6.1 以 Stage 07 的来源与分块为基础，单独做 TRAIN-only RF characterization，尚未训练新预测模型。[Phase 6.1 报告](../docs/PHASE6_1_REPORT.md) 给出 0/236 可靠 ROI 与 Gate 决策。
+
 ```text
 simulate/ 的刺激设计与播放源码
   ↓

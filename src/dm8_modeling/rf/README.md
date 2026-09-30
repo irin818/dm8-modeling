@@ -1,5 +1,7 @@
 # rf/ 模块说明
 
+当前 ACTIVE RF 估计在 [`characterization.py`](characterization.py)：TRAIN split-half 核、投影、FDR、Gaussian 中心及 RF 对齐。`sta.py` 的预测基线与 Stage 08 的旧筛查均为历史路径；详见 [Phase 6.1 方法](../../../docs/PHASE6_RF_RELIABILITY.md)。
+
 ## 模块目的
 
 估计 receptive field 并提供刺激响应零模型。
