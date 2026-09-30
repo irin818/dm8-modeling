@@ -1,0 +1,15 @@
+experiment,model,target,dataset,validation_scheme,key_metric,main_result,scientific_conclusion,status
+Phase1,STA,raw ROI mean intensity,5 flies one frozen stimulus,late temporal block,median test R2,negative in all five flies,reverse correlation useful for RF description but not population prediction,ABANDONED_METHOD
+Phase1,Ridge STRF,raw ROI mean intensity,5 flies one frozen stimulus,late temporal block,median test R2,negative in all five flies,regularized full spatial prediction remained weak,ABANDONED_METHOD
+Phase2,Pixel temporal filter,raw ROI mean intensity,236 ROIs across 5 flies,train validation test temporal blocks,positive test R2 ROI count,34 of 236; Mean29 R2 0.235,local stimulus coupling exists for a subset but not all ROIs,RETAINED_RESULT
+Phase4,compact CNN,raw ROI mean intensity,236 ROIs across 5 flies,paired Pixel test frames,delta test R2,4 gains above 0.01 and 75 losses below -0.01,extra nonlinear capacity did not stably improve prediction,ABANDONED_METHOD
+Phase5,independent Pixel,standardized raw intensity,236 ROIs across 5 flies,two temporal folds,median test R2,-0.090 and -0.213,interpretable baseline remained weak overall,RETAINED_RESULT
+Phase5,independent Ridge,standardized raw intensity,236 ROIs across 5 flies,two temporal folds,median test R2,-0.103 and -0.214,full spatial model did not rescue prediction,ABANDONED_METHOD
+Phase5,shared STRF,standardized raw intensity,236 ROIs across 5 flies,two temporal folds,median test R2,-0.174 and -0.234,no stable gain over independent model,ABANDONED_METHOD
+Phase5,hierarchical STRF,standardized raw intensity,236 ROIs across 5 flies,two temporal folds,median test R2,-0.178 and -0.230,fly deviation did not rescue shared prediction,ABANDONED_METHOD
+Phase5,shared low-rank basis,standardized raw intensity,236 ROIs across 5 flies,two temporal folds,median test R2,-0.136 and -0.214,no consistent gain from low-rank sharing,ABANDONED_METHOD
+Phase5,population average predictor,average standardized ROI response per fly,5 flies,two temporal folds,median test R2,-0.515 and -0.174,predictive population target remained weak and differs from descriptive RF,ABANDONED_METHOD
+Phase5,LOFO predictor,standardized raw intensity,5 flies,leave one fly out temporal test,median target-fly test R2,-0.141 and -0.268 without adaptation,shared predictor did not transfer to held-out fly,ABANDONED_METHOD
+Phase5,response transform comparison,causal block median residual,236 ROIs across 5 flies,two temporal folds,median test R2,-0.050 and -0.021 independent Ridge on changed target,preprocessing changes target and cannot imply raw target improvement,RETAINED_RESULT
+Phase6.1,strict RF reliability,raw and three alternate responses,236 ROIs across 5 flies,TRAIN halves and 944 BH family,RF_RELIABLE count,0 of 236 and minimum q 0.0961,no confirmatory individual RF inclusion set,RETAINED_RESULT
+Phase6.1b,RF method and power audit,Li-style offline response,229 valid ROIs across 5 flies,TRAIN-only exploratory reanalysis,median split-half RF r,coarse 0.0141 versus fine 0.0039,fine lags and narrower FDR did not recover robust RF,RETAINED_RESULT

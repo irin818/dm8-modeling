@@ -1,45 +1,41 @@
-# 项目结构：从实验事实到最终解释
+# 项目结构与阅读路线
 
-第一次阅读请先看 [流程总览](modeling_pipeline/README.md)，再看当前的 [Phase 6.1 结果](docs/PHASE6_1_REPORT.md)。`modeling_pipeline/stage_01_*` 到 `stage_12_*` 是可重播的 Phase 1–5 历史流程；`modeling_pipeline/phase_06/` 是独立的 ACTIVE TRAIN-only RF 流程。深入源码前先看 [源码地图](src/dm8_modeling/README.md)。
-
-| 目录 | 唯一职责 | 是否为原始实验数据 | 是否提交 Git |
-|---|---|---|---|
-| `simulate/` | 刺激生成、打包、播放、marker-lock 的实验工程副本 | 是，实验来源；只读 | 否 |
-| `Dm8_module/` | 五只 fly 的原始记录、刺激包、TTL、Results.csv | 是；只读 | 否 |
-| `modeling_pipeline/` | 历史 Stage 01→12 与独立的 Phase 6.1 RF 入口 | 否 | 是 |
-| `src/dm8_modeling/` | 可复用的读取、预处理、特征、模型与评价实现 | 否 | 是 |
-| `datasets/` | 三类派生数据集的定义与生成 manifest，不放原始文件 | 否 | README 是；生成 manifest 忽略 |
-| `configs/` | 可调整的工作流与实验参数 | 否 | 是 |
-| `outputs/` | 运行结果、逐阶段 manifest、旧实验保留结果 | 否 | 否 |
-| `tests/` | 数据契约、因果性、模型复算与回归测试 | 否 | 是 |
-| `scripts/` | 仍有独立用途的审计/验证工具及历史脚本 | 否 | 是 |
-| `docs/` | 科研证据、历史阶段报告与最终结论 | 否 | 是 |
-
-`simulate/`、`Dm8_module/` 的位置和内容不变。`datasets/` 只保存派生对象的说明和元数据；真正的 `IndividualDataset`、`IntegratedDataset`、`PopulationDataset` 类型在 `src/dm8_modeling/datasets/`。`outputs/` 原有 `first_pass/`、`ridge_raw/`、`pixel_raw/`、`cnn_comparison/` 等未迁移或删除；新增 `stage_01_*` 至 `stage_12_*` 对应流程结果。旧到新映射见 [REORGANIZATION_MAP](REORGANIZATION_MAP.md)。
-
-当前 Phase 6.1 输出写入忽略的 `outputs/phase_06/response/`、`reliability/` 和 `alignment/`，配置在 `configs/phase6_rf.json`。使用 Stage 07 已验证的前序 manifest，不运行 Stage 09/10 的旧预测模型：
-
-```bash
-OPENBLAS_NUM_THREADS=2 .venv/bin/python modeling_pipeline/phase_06/run.py --workspace-root .
+```text
+simulate/                 刺激设计/播放源码，只读来源
+Dm8_module/               五次实验的保存刺激、ROI 表与时钟，只读来源
+configs/                  冻结的 RF 与工作流参数
+src/dm8_modeling/          读取、对齐、预处理、RF 与输出实现
+modeling_pipeline/         Stage 01–07 来源链与 Phase 6 工作入口
+tests/                     当前数据链与 RF 单元检查
+docs/                      科学报告、历史结论、关键图
+outputs/                   可复算的本地派生数据，Git 忽略
 ```
 
-运行整条流程：
+当前科学主线：
 
-```bash
-cd /Users/irin/Documents/dm8_modeling
-.venv/bin/dm8-model pipeline run --workspace-root .
+```text
+原始实验及保存的数字刺激
+    ↓
+来源核验 → DLP/Zeiss 时间对应 → ROI 平均强度
+    ↓
+Li-style 离线响应（raw 诊断）
+    ↓
+每 ROI 粗时间 RF → 白噪声导出的中心 → 无环绕对齐
+    ↓
+每 fly 等权 ROI 平均 → 五 fly 等权群体平均
+    ↓
+径向曲线、留一 fly 检查 → 生物学解释及限制
 ```
 
-单独运行 Stage 07 前需要 Stage 06 的有效 manifest：
+| 位置 | 当前用途 |
+|---|---|
+| [`modeling_pipeline/stage_01_source_audit/`](modeling_pipeline/stage_01_source_audit/) 至 [`stage_07_integrated_dataset/`](modeling_pipeline/stage_07_integrated_dataset/) | 来源/数据构建的历史可运行阶段；其预测导向 Stage 08–12 已退役。 |
+| [`modeling_pipeline/phase_06/`](modeling_pipeline/phase_06/) | Phase 6.1 严格 RF、6.1b 方法审计、6.2 全数据描述性 RF 的独立入口。 |
+| [`src/dm8_modeling/data/`](src/dm8_modeling/data/) | 保存刺激、ROI 和设备时钟的只读读取及对齐。 |
+| [`src/dm8_modeling/preprocessing/`](src/dm8_modeling/preprocessing/) | 原始及 Li-style 离线响应表示。 |
+| [`src/dm8_modeling/rf/`](src/dm8_modeling/rf/) | 反向相关、中心估计、掩码对齐、群体/径向汇总。 |
+| [`src/dm8_modeling/experiments/`](src/dm8_modeling/experiments/) | 阶段编排、配置、结果及 manifest。 |
+| [`docs/PHASE6_2_POPULATION_RF.md`](docs/PHASE6_2_POPULATION_RF.md) | 当前主要科学结论与图 1–5。 |
+| [`docs/HISTORICAL_MODELING_CONCLUSIONS.md`](docs/HISTORICAL_MODELING_CONCLUSIONS.md) | 预测模型的已固定数值结论与停止理由。 |
 
-```bash
-.venv/bin/dm8-model pipeline stage 7 --workspace-root .
-```
-
-已完成 Stage 06 时可从 Stage 07 接着运行：
-
-```bash
-.venv/bin/dm8-model pipeline run --from-stage 7 --workspace-root .
-```
-
-运行不会移动或覆盖原始实验文件。任何前序 manifest、配置或其声明的输入/输出哈希不匹配时，下一阶段会明确失败。
+五只 fly 是生物学重复；236 ROI 是 fly 内测量。五次实验共享一条数字刺激，不能声称五条独立刺激。旧文档中的预测命令和路径属于历史记录，当前安装不再提供已退役模型代码。[清理记录](docs/PHASE6_2_CLEANUP_LOG.md)列出删除与保留的具体范围。

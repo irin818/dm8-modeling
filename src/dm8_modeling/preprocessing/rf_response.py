@@ -3,7 +3,8 @@
 The paper describes a Gaussian low-pass baseline with 10 s standard
 deviation, followed by subtraction. This implementation uses the median
 Zeiss frame interval (the recorded jitter is checked) and reflected edges.
-Callers must pass one TRAIN half at a time, then discard the edge margin.
+The caller chooses the analysis segment and records how reflected edges are
+handled. Phase 6.1 trims each TRAIN half; Phase 6.2 uses the full payload.
 """
 
 from __future__ import annotations

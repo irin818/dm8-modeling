@@ -1,17 +1,15 @@
-# Phase 6.1：ACTIVE 响应重建与 TRAIN-only RF 诊断
+# Phase 6：单 ROI 严格检验与全数据群体描述
 
-本目录是当前研究入口；历史 `stage_01_*`–`stage_12_*` 保留原有运行与重播行为。Phase 6.1 **不拟合预测模型**。先验证 Stage 07 的源清单，再运行 6.1A 响应重建、6.1B RF 可靠性、6.1C 中心与对齐准入。新计算从 raw 数据只读重建，不使用 Stage 08 的旧 ROI 白名单，也不读取 TEST 响应作选择。
+| 入口 | 科学问题 | 数据使用 | 报告 |
+|---|---|---|---|
+| `run.py` | Phase 6.1 单 ROI RF 可靠性与中心准入 | 历史 TRAIN 段 | [结果：0/236 RF_RELIABLE](../../docs/PHASE6_1_REPORT.md) |
+| `run_method_audit.py` | Phase 6.1b 方法与功效审计 | TRAIN-only | [审计报告](../../docs/PHASE6_1B_RF_METHOD_AUDIT.md) |
+| `run_population.py` | Phase 6.2 五 fly 描述性 RF、留一 fly 稳定性 | 各记录全部可用白噪声；无独立验证 | [主报告](../../docs/PHASE6_2_POPULATION_RF.md) |
+
+Phase 6.1 的严格纳入门槛未通过，因而**没有**建立确认性的 RF-centered 新刺激数据集。Phase 6.2 是另一个明确标记为全数据描述性的研究问题：仅排除技术无效 ROI，先每 ROI 建粗时间 RF，再按 fly 层级平均。这不推翻 Phase 6.1，也不能将本轮群体图用于声明单 ROI 显著性。
 
 ```bash
-OPENBLAS_NUM_THREADS=2 .venv/bin/python modeling_pipeline/phase_06/run.py --workspace-root .
+OPENBLAS_NUM_THREADS=2 .venv/bin/python modeling_pipeline/phase_06/run_population.py --workspace-root .
 ```
 
-| 子阶段 | 输入 | 主要算法 | 输出 |
-|---|---|---|---|
-| A | raw Results、Zeiss TTL、Phase 5 `fold_a` TRAIN | raw + 分半离线 Li Gaussian + 两个 past-only residual | `outputs/phase_06/response/`：数组、raw SHA-256 provenance、逐 ROI 摘要、manifest |
-| B | 同一批 TRAIN A/B 行和过去刺激特征 | reverse correlation、A→B 投影、shift null、BH-FDR、RF z-score | `outputs/phase_06/reliability/`：核 NPZ、逐候选指标、表示比较、manifest |
-| C | B 的 TRAIN RF 与预设门槛 | 1D Gaussian 中心、split-half 位移、仅可靠 ROI 的中心对齐 | `outputs/phase_06/alignment/`：中心图、分类、均值 RF、相似度/Gate、manifest |
-
-Phase 6 目前没有 `RF_RELIABLE` ROI；均值 RF 标记为缺失，不以零数组代表真实 RF。Gate A/B 不通过时停止 Phase 6.2。每个 manifest 保存声明输入/输出的 SHA-256 及 Git 提交。阅读顺序：[证据与假设](../../docs/PHASE6_ASSUMPTIONS.md) → [响应重建](../../docs/PHASE6_RESPONSE_RECONSTRUCTION.md) → [RF 可靠性与中心](../../docs/PHASE6_RF_RELIABILITY.md) → [运行报告](../../docs/PHASE6_1_REPORT.md) → `run.py` → `src/dm8_modeling/experiments/phase6.py`。
-
-后续 Phase 6.1b 的 TRAIN-only 方法/功效审计从 `run_method_audit.py` 单独运行，结果写入 `outputs/phase_06/rf_method_audit/`；详见 [审计报告](../../docs/PHASE6_1B_RF_METHOD_AUDIT.md)。
+配置为 [`phase6_2_population_rf.json`](../../configs/phase6_2_population_rf.json)，输出为 `outputs/phase_06/population_rf/`。主 RF 值保留符号；白噪声导出 Gaussian 中心，裁剪边界以 NaN 掩码处理，不做 circular wrap；每 fly 内 ROI 等权、fly 间等权。`summary.json`、逐 ROI/逐 fly CSV、NPZ、图 1–5 和 `stage_manifest.json` 可用于复核。

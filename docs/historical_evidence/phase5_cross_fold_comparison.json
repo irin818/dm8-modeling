@@ -1,0 +1,358 @@
+{
+  "comparison_unit": "ROI within fly; fly is biological replicate",
+  "test_status": "historical exploratory test, already used in earlier project stages",
+  "folds": {
+    "fold_a": {
+      "shared_strf_affine": {
+        "all_roi_median_delta_r2": -0.00037258742883300444,
+        "responsive_median_delta_r2": 0.003942956274627596,
+        "all_roi_fraction_improved": 0.4915254237288136,
+        "fly_count_with_positive_median_delta": 4,
+        "per_fly": {
+          "fly1": {
+            "median_delta_r2": 0.006542403535955144,
+            "fraction_roi_improved": 0.6904761904761905
+          },
+          "fly2": {
+            "median_delta_r2": 0.01291384318422073,
+            "fraction_roi_improved": 0.64
+          },
+          "fly3": {
+            "median_delta_r2": 0.001887652669047668,
+            "fraction_roi_improved": 0.52
+          },
+          "fly4": {
+            "median_delta_r2": -0.08954906599287282,
+            "fraction_roi_improved": 0.08333333333333333
+          },
+          "fly5": {
+            "median_delta_r2": 0.0023786529225763298,
+            "fraction_roi_improved": 0.5434782608695652
+          }
+        }
+      },
+      "shared_plus_fly_deviation": {
+        "all_roi_median_delta_r2": -0.00048075245920137233,
+        "responsive_median_delta_r2": 0.0035564066409619066,
+        "all_roi_fraction_improved": 0.4957627118644068,
+        "fly_count_with_positive_median_delta": 4,
+        "per_fly": {
+          "fly1": {
+            "median_delta_r2": 0.005214733063138133,
+            "fraction_roi_improved": 0.6904761904761905
+          },
+          "fly2": {
+            "median_delta_r2": 0.013025358807247867,
+            "fraction_roi_improved": 0.64
+          },
+          "fly3": {
+            "median_delta_r2": 0.0026446888240641564,
+            "fraction_roi_improved": 0.54
+          },
+          "fly4": {
+            "median_delta_r2": -0.10914759653295358,
+            "fraction_roi_improved": 0.08333333333333333
+          },
+          "fly5": {
+            "median_delta_r2": 0.0027701588746346095,
+            "fraction_roi_improved": 0.5434782608695652
+          }
+        }
+      },
+      "shared_factorized_basis": {
+        "all_roi_median_delta_r2": -0.00010477176470968796,
+        "responsive_median_delta_r2": -0.0009883051834900236,
+        "all_roi_fraction_improved": 0.5,
+        "fly_count_with_positive_median_delta": 4,
+        "per_fly": {
+          "fly1": {
+            "median_delta_r2": 0.005380371756895541,
+            "fraction_roi_improved": 0.6904761904761905
+          },
+          "fly2": {
+            "median_delta_r2": 0.01008621690405831,
+            "fraction_roi_improved": 0.66
+          },
+          "fly3": {
+            "median_delta_r2": 0.0024715415738447155,
+            "fraction_roi_improved": 0.54
+          },
+          "fly4": {
+            "median_delta_r2": -0.033155837938101895,
+            "fraction_roi_improved": 0.08333333333333333
+          },
+          "fly5": {
+            "median_delta_r2": 0.003203421091811043,
+            "fraction_roi_improved": 0.5434782608695652
+          }
+        }
+      },
+      "shared_strf_equal_roi": {
+        "all_roi_median_delta_r2": -0.00036221610149339556,
+        "responsive_median_delta_r2": 0.004278109499762595,
+        "all_roi_fraction_improved": 0.4915254237288136,
+        "fly_count_with_positive_median_delta": 4,
+        "per_fly": {
+          "fly1": {
+            "median_delta_r2": 0.00708834926822266,
+            "fraction_roi_improved": 0.6904761904761905
+          },
+          "fly2": {
+            "median_delta_r2": 0.013552841061377774,
+            "fraction_roi_improved": 0.64
+          },
+          "fly3": {
+            "median_delta_r2": 0.002615256905878549,
+            "fraction_roi_improved": 0.52
+          },
+          "fly4": {
+            "median_delta_r2": -0.08697137584586467,
+            "fraction_roi_improved": 0.08333333333333333
+          },
+          "fly5": {
+            "median_delta_r2": 0.0024381571796041612,
+            "fraction_roi_improved": 0.5434782608695652
+          }
+        }
+      },
+      "shared_strf_raw_units": {
+        "all_roi_median_delta_r2": -0.00428441930868928,
+        "responsive_median_delta_r2": 0.004854841608757932,
+        "all_roi_fraction_improved": 0.4449152542372881,
+        "fly_count_with_positive_median_delta": 3,
+        "per_fly": {
+          "fly1": {
+            "median_delta_r2": 0.008410083360064657,
+            "fraction_roi_improved": 0.6904761904761905
+          },
+          "fly2": {
+            "median_delta_r2": 0.00852144997226334,
+            "fraction_roi_improved": 0.56
+          },
+          "fly3": {
+            "median_delta_r2": -0.011836657143097673,
+            "fraction_roi_improved": 0.4
+          },
+          "fly4": {
+            "median_delta_r2": -0.2290058161984323,
+            "fraction_roi_improved": 0.0625
+          },
+          "fly5": {
+            "median_delta_r2": 0.0017070247491273172,
+            "fraction_roi_improved": 0.5434782608695652
+          }
+        }
+      },
+      "shared_strf_validation_selected_response": {
+        "all_roi_median_delta_r2": -0.008107111596125316,
+        "responsive_median_delta_r2": -0.004935154617178306,
+        "all_roi_fraction_improved": 0.3474576271186441,
+        "fly_count_with_positive_median_delta": 2,
+        "per_fly": {
+          "fly1": {
+            "median_delta_r2": -0.01583510469428795,
+            "fraction_roi_improved": 0.19047619047619047
+          },
+          "fly2": {
+            "median_delta_r2": 0.0011552914865404773,
+            "fraction_roi_improved": 0.52
+          },
+          "fly3": {
+            "median_delta_r2": 0.002860229042668805,
+            "fraction_roi_improved": 0.66
+          },
+          "fly4": {
+            "median_delta_r2": -0.06821274624641238,
+            "fraction_roi_improved": 0.020833333333333332
+          },
+          "fly5": {
+            "median_delta_r2": -0.010930961550154272,
+            "fraction_roi_improved": 0.30434782608695654
+          }
+        }
+      }
+    },
+    "fold_b": {
+      "shared_strf_affine": {
+        "all_roi_median_delta_r2": -0.0039354118527427095,
+        "responsive_median_delta_r2": -0.019315151183019796,
+        "all_roi_fraction_improved": 0.4194915254237288,
+        "fly_count_with_positive_median_delta": 2,
+        "per_fly": {
+          "fly1": {
+            "median_delta_r2": 0.0017799176817745455,
+            "fraction_roi_improved": 0.5952380952380952
+          },
+          "fly2": {
+            "median_delta_r2": 0.010360875446490891,
+            "fraction_roi_improved": 0.7
+          },
+          "fly3": {
+            "median_delta_r2": -0.010508951593282134,
+            "fraction_roi_improved": 0.22
+          },
+          "fly4": {
+            "median_delta_r2": -0.0035531995779833903,
+            "fraction_roi_improved": 0.4375
+          },
+          "fly5": {
+            "median_delta_r2": -0.019002565988192888,
+            "fraction_roi_improved": 0.15217391304347827
+          }
+        }
+      },
+      "shared_plus_fly_deviation": {
+        "all_roi_median_delta_r2": -0.003906689463093693,
+        "responsive_median_delta_r2": -0.017468822172636678,
+        "all_roi_fraction_improved": 0.4364406779661017,
+        "fly_count_with_positive_median_delta": 2,
+        "per_fly": {
+          "fly1": {
+            "median_delta_r2": 0.0020410019743213326,
+            "fraction_roi_improved": 0.5952380952380952
+          },
+          "fly2": {
+            "median_delta_r2": 0.02087991262572586,
+            "fraction_roi_improved": 0.7
+          },
+          "fly3": {
+            "median_delta_r2": -0.009792607924429486,
+            "fraction_roi_improved": 0.28
+          },
+          "fly4": {
+            "median_delta_r2": -0.0030489259982954264,
+            "fraction_roi_improved": 0.4583333333333333
+          },
+          "fly5": {
+            "median_delta_r2": -0.018780608413185684,
+            "fraction_roi_improved": 0.15217391304347827
+          }
+        }
+      },
+      "shared_factorized_basis": {
+        "all_roi_median_delta_r2": -5.042140079980495e-05,
+        "responsive_median_delta_r2": -0.014411839159709117,
+        "all_roi_fraction_improved": 0.4957627118644068,
+        "fly_count_with_positive_median_delta": 3,
+        "per_fly": {
+          "fly1": {
+            "median_delta_r2": 0.00448374187865197,
+            "fraction_roi_improved": 0.6904761904761905
+          },
+          "fly2": {
+            "median_delta_r2": 0.014042779237405378,
+            "fraction_roi_improved": 0.68
+          },
+          "fly3": {
+            "median_delta_r2": -0.004250914953728535,
+            "fraction_roi_improved": 0.36
+          },
+          "fly4": {
+            "median_delta_r2": 0.004044921705431914,
+            "fraction_roi_improved": 0.5625
+          },
+          "fly5": {
+            "median_delta_r2": -0.013279878499575015,
+            "fraction_roi_improved": 0.1956521739130435
+          }
+        }
+      },
+      "shared_strf_equal_roi": {
+        "all_roi_median_delta_r2": -0.003928904054763094,
+        "responsive_median_delta_r2": -0.01910431623570763,
+        "all_roi_fraction_improved": 0.4322033898305085,
+        "fly_count_with_positive_median_delta": 2,
+        "per_fly": {
+          "fly1": {
+            "median_delta_r2": 0.0027065236365447776,
+            "fraction_roi_improved": 0.6190476190476191
+          },
+          "fly2": {
+            "median_delta_r2": 0.011759953151389002,
+            "fraction_roi_improved": 0.7
+          },
+          "fly3": {
+            "median_delta_r2": -0.010422270269824674,
+            "fraction_roi_improved": 0.26
+          },
+          "fly4": {
+            "median_delta_r2": -0.003627546218501476,
+            "fraction_roi_improved": 0.4375
+          },
+          "fly5": {
+            "median_delta_r2": -0.018782402386710306,
+            "fraction_roi_improved": 0.15217391304347827
+          }
+        }
+      },
+      "shared_strf_raw_units": {
+        "all_roi_median_delta_r2": -0.0027777687020282826,
+        "responsive_median_delta_r2": -0.017098660167537305,
+        "all_roi_fraction_improved": 0.4322033898305085,
+        "fly_count_with_positive_median_delta": 2,
+        "per_fly": {
+          "fly1": {
+            "median_delta_r2": 0.005557401523435979,
+            "fraction_roi_improved": 0.6428571428571429
+          },
+          "fly2": {
+            "median_delta_r2": 0.013313547667508363,
+            "fraction_roi_improved": 0.66
+          },
+          "fly3": {
+            "median_delta_r2": -0.018036973400600953,
+            "fraction_roi_improved": 0.28
+          },
+          "fly4": {
+            "median_delta_r2": -0.002641331357681298,
+            "fraction_roi_improved": 0.4583333333333333
+          },
+          "fly5": {
+            "median_delta_r2": -0.016039406980417725,
+            "fraction_roi_improved": 0.13043478260869565
+          }
+        }
+      },
+      "shared_strf_validation_selected_response": {
+        "all_roi_median_delta_r2": -0.001320174304327404,
+        "responsive_median_delta_r2": -0.014673696864229091,
+        "all_roi_fraction_improved": 0.4449152542372881,
+        "fly_count_with_positive_median_delta": 2,
+        "per_fly": {
+          "fly1": {
+            "median_delta_r2": -0.0011902822045488093,
+            "fraction_roi_improved": 0.4523809523809524
+          },
+          "fly2": {
+            "median_delta_r2": 0.0032953035056745295,
+            "fraction_roi_improved": 0.64
+          },
+          "fly3": {
+            "median_delta_r2": 0.0018534713935833835,
+            "fraction_roi_improved": 0.62
+          },
+          "fly4": {
+            "median_delta_r2": -0.050614131524276185,
+            "fraction_roi_improved": 0.16666666666666666
+          },
+          "fly5": {
+            "median_delta_r2": -0.007639491205375271,
+            "fraction_roi_improved": 0.32608695652173914
+          }
+        }
+      }
+    }
+  },
+  "parameter_stability": {
+    "shared_strf_affine": {
+      "absolute_first_direction_cosine": 0.8843211055672062,
+      "sign_ambiguous_cosine": 0.8843211055672062,
+      "note": "A broad shared training prefix makes these two fits correlated; this is descriptive, not independent replication."
+    },
+    "shared_factorized_basis": {
+      "absolute_first_direction_cosine": 0.8973070992930121,
+      "sign_ambiguous_cosine": 0.8973070992930121,
+      "note": "A broad shared training prefix makes these two fits correlated; this is descriptive, not independent replication."
+    }
+  }
+}
