@@ -7,7 +7,7 @@ name = "dm8-modeling"
 version = "0.1.0"
 description = "Read-only Dm8 alignment and descriptive population RF analysis"
 requires-python = ">=3.11"
-dependencies = ["numpy>=1.26,<3", "matplotlib>=3.8,<4"]
+dependencies = ["numpy>=1.26,<3", "matplotlib>=3.8,<4", "scipy>=1.13,<2"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
