@@ -1,0 +1,12 @@
+{
+  "recorded_utc": "2026-09-30T13:42:14.572473+00:00",
+  "baseline_commit": "c03dd3e084ad2e4a51a981dea0e36e7fc725131d",
+  "before_full_run": true,
+  "file_sha256": {
+    "configs/phase6_3_validation.json": "e48824d509f495bbe95d95aa67783b94d6c07ddacb1071edf95bf112496597a9",
+    "docs/PHASE6_3_ASSUMPTION_AUDIT.md": "5eb68261e9f7eeeb5856aefa11c5c74539091b9d16a2e7d5a051aeb602dd46e6",
+    "src/dm8_modeling/experiments/phase63.py": "8f917f2555d487d9bea036ed47a88482ff6a5a817d0f2fe68dd76130456ef12d",
+    "src/dm8_modeling/rf/validation.py": "4e41e6f60684522611d3b46f855643fa5aa94abb7f13df681a8717c6937bf8e2",
+    "src/dm8_modeling/experiments/rf_validation_plots.py": "bd2aa820d37e97f01971f92664feb5c78fb26de14d2497e0a56368966f3a5ddf"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": "phase6_3_fly_population_validation_v1",
+  "status": "EXPLORATORY INTERNAL VALIDATION",
+  "baseline_commit": "c03dd3e084ad2e4a51a981dea0e36e7fc725131d",
+  "estimator_config": "configs/phase6_2_population_rf.json",
+  "n_null": 1000,
+  "random_seed": 6320260930,
+  "minimum_shift_seconds": 60.0,
+  "shift_unit": "one_shared_offset_for_all_raw_ROIs_within_each_fly",
+  "independent_offsets_across_flies": true,
+  "null_pipeline": "shift_full_raw_payload_then_recompute_Li_scaling_RF_center_alignment_fly_mean",
+  "primary_null_statistic": "signed_center_zone_mean_negative_tail",
+  "additional_null_statistics": ["center_pixel", "radial_profile", "max_abs_within_center_zone"],
+  "primary_p_family": "five_fly_center_zone_and_population_center_zone_BH6",
+  "radial_peak_min_lower_edge_px": 2.0,
+  "stable_label": "CENTER_ESTIMATED",
+  "uncertain_label": "CENTER_UNCERTAIN",
+  "sign_consensus": "exact_signed_values_no_posthoc_amplitude_threshold",
+  "population_weighting": "equal_available_fly_after_equal_ROI_within_fly",
+  "stop_after_phase": "6.3"
+}
