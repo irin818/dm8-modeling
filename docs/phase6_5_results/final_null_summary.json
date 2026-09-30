@@ -1,0 +1,19 @@
+{
+  "n": 500,
+  "observed_center": -1.1235485013016957,
+  "observed_surround": -0.0006055535418101,
+  "p_negative_center": 0.001996007984031936,
+  "p_positive_surround": 0.5489021956087824,
+  "null_center_quantiles": [
+    -0.06817065625138993,
+    -0.0030175569463856203,
+    0.06652657994862332
+  ],
+  "null_surround_quantiles": [
+    -0.019956869928231404,
+    0.0008900368064166627,
+    0.02131149695469493
+  ],
+  "observed_candidate_positive": false,
+  "method": "independent raw circular shifts by fly; full Gaussian baseline; global energy lag selected on full record, then trimmed RF, RF zscore, center, bilinear alignment, ROI then fly means"
+}
