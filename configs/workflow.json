@@ -1,8 +1,0 @@
-{
-  "schema_version": "workflow_v1",
-  "data_root": "Dm8_module",
-  "stimulus_code_root": "simulate",
-  "dataset_root": "datasets",
-  "output_root": "outputs",
-  "phase5_experiment_config": "configs/phase5_first_round.json"
-}

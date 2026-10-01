@@ -1,9 +1,0 @@
-variant,changed_step,center_negative,surround_to_abs_center,delta_ratio_from_previous,positive_surround_flies,biological_n
-C0,historical baseline,True,-0.0419087755992031,,2,5
-C1,RF post-zscore,True,0.010570918994251484,0.052479694593454584,3,5
-C2,native 40-lag normalization,True,0.004002462419978587,-0.006568456574272897,3,5
-C3,global energy peak spatial slice,True,-0.007215234678284081,-0.011217697098262668,2,5
-C4,Gaussian edge trim,True,-0.0042295691701917095,0.0029856655080923713,2,5
-C5,bilinear subpixel alignment,True,-0.0005389651991957012,0.003690603970996008,4,5
-C6,all ROI equal morphology,True,-0.0018661032578738842,-0.0013271380586781828,4,5
-C7,five fly equal inference,True,-0.0005389651991957012,0.0013271380586781828,4,5

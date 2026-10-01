@@ -8,13 +8,8 @@ __pycache__/
 .env
 .env.*
 !.env.example
-/data/
-outputs/
-/datasets/cache/
-/datasets/*/manifest.json
-/datasets/*/summaries/
 *.zip
 
-# Workspace sources are read-only inputs, not analysis-repository contents.
+# Local experimental inputs are read-only and must never be committed.
 Dm8_module/
 simulate/
