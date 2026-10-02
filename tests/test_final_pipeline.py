@@ -4,17 +4,17 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 import numpy as np
-from dm8_modeling.alignment import estimate_centers, subpixel_align
-from dm8_modeling.data import source_manifest, technical_roi_mask
-from dm8_modeling.models import fit_models, projection_matrix, rotational_profile
-from dm8_modeling.population import valid_mean, population_spatial
+from dm8_modeling.alignment import estimate_centers, subpixel_align, fit_axis_centers
+from dm8_modeling.data import Recording, source_manifest, technical_roi_mask
+from dm8_modeling.population import valid_mean, fly_spatial, population_spatial
 from dm8_modeling.preprocessing import relative_response
-from dm8_modeling.rf import native_design, reverse_correlation, rf_zscore
+from dm8_modeling.rf import native_design, reverse_correlation, rf_zscore, estimate_strf, global_energy_lag
 from dm8_modeling.statistics import circular_shifts, empirical_p
 from dm8_modeling.timing import associate_frames, read_clock
 
-# Resolve the repository from the installed final layout or pre-deletion candidate.
+# Resolve the repository without relying on a working-directory convention.
 ROOT = next(p for p in Path(__file__).resolve().parents if (p/"configs/final_analysis.json").is_file())
 CONFIG = json.loads((ROOT/"configs/final_analysis.json").read_text())
 
@@ -68,6 +68,20 @@ class FinalPipelineTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             relative_response(np.ones((1000,1)), times, CONFIG)
 
+    def test_primary_edge_trim(self):
+        """Primary covariance excludes both 3σ edges; full-record lag selection keeps them."""
+        rng = np.random.default_rng(8)
+        stimulus = rng.choice([-1.,1.], size=(1100,225)).astype(np.float32)
+        response = (100+np.sin(np.arange(1001)/7))[:,None].astype(np.float32)
+        recording = Recording("synthetic", "edge-test", stimulus, response,
+                              np.arange(1001), np.arange(1001)*100_000, np.array([0]), {})
+        full = estimate_strf(recording, CONFIG, trim=False)
+        primary = estimate_strf(recording, CONFIG, trim=True)
+        self.assertEqual(primary["margin"], 300)
+        self.assertEqual(full["frames"], 1001-39)
+        self.assertEqual(primary["frames"], 1001-600)
+        self.assertEqual(primary["kernel"].shape, (40,15,15,1))
+
     def test_reverse_correlation_shape_sign(self):
         """Balanced ON stimulation coupled to lower response gives negative covariance."""
         stimulus = np.array([[-1.],[1.],[-1.],[1.]])
@@ -89,6 +103,31 @@ class FinalPipelineTests(unittest.TestCase):
         image = -np.exp(-((rows-6.25)**2+(cols-8.5)**2)/(2*1.5**2))
         np.testing.assert_allclose(estimate_centers(image[:,:,None], CONFIG), [[6.25,8.5]], atol=.25)
         np.testing.assert_allclose(estimate_centers(-image[:,:,None], CONFIG), [[6.25,8.5]], atol=.25)
+
+    def test_center_quality_rejection(self):
+        """Flat RFs have no center; a strict fit-quality threshold rejects a two-peak profile."""
+        self.assertTrue(np.isnan(estimate_centers(np.ones((15,15,1)), CONFIG)).all())
+        profile = np.zeros((1,15))
+        profile[0,[2,12]] = 1
+        strict = {**CONFIG, "center_fit_quality_min": .999}
+        self.assertTrue(np.isnan(fit_axis_centers(profile, strict)).all())
+
+    def test_roi_to_fly_mean(self):
+        """Centered ROI maps are averaged equally within the fly and retain contributor counts."""
+        row, col = np.mgrid[:15,:15]
+        image = -np.exp(-((row-7)**2+(col-7)**2)/(2*1.5**2))
+        kernel = np.stack([image, 3*image], axis=2)[None]
+        fly = fly_spatial({"kernel": kernel}, 0, CONFIG)
+        np.testing.assert_allclose(fly["map"], 2*image, atol=1e-12)
+        np.testing.assert_array_equal(fly["roi_support"], np.full((15,15),2))
+
+    def test_global_energy_uses_equal_fly_weights(self):
+        """One fly with 100 ROI must not outweigh one with one ROI in lag selection."""
+        first = np.zeros((40,15,15,1))
+        second = np.zeros((40,15,15,100))
+        first[1,7,7,:] = 10
+        second[2,7,7,:] = 2
+        self.assertEqual(global_energy_lag([{"kernel":first},{"kernel":second}]), 1)
 
     def test_subpixel_no_wrap(self):
         """Fractional translations preserve interpolation and leave the lost boundary NaN."""
@@ -125,32 +164,6 @@ class FinalPipelineTests(unittest.TestCase):
         self.assertEqual(int(np.argmax(np.abs(kernel[:,0]))), 4)
         self.assertLess(kernel[4,0], -2.99)
 
-    def test_gaussian_model_recovery(self):
-        """An exact Gaussian profile is recovered at the known grid width."""
-        x = np.arange(-7,8)
-        profile = .002-.02*np.exp(-x*x/(2*1.5**2))
-        fit = fit_models(profile, CONFIG)[0]
-        self.assertGreater(fit["r2"], .999999)
-        self.assertEqual(fit["center_sigma_px"], 1.5)
-        np.testing.assert_allclose(fit["prediction"], profile, atol=1e-10)
-
-    def test_dog_model_recovery(self):
-        """A true opposing-sign DoG recovers widths and signed amplitudes."""
-        x = np.arange(-7,8)
-        profile = .001-.02*np.exp(-x*x/(2*1**2))+.008*np.exp(-x*x/(2*3**2))
-        fit = fit_models(profile, CONFIG)[1]
-        self.assertGreater(fit["r2"], .999999)
-        self.assertEqual(fit["center_sigma_px"], 1)
-        self.assertEqual(fit["surround_sigma_px"], 3)
-        self.assertLess(fit["center_amplitude"], 0)
-        self.assertGreater(fit["surround_amplitude"], 0)
-
-    def test_projection_missing_support(self):
-        """A constant RF with missing border pixels remains constant after projection."""
-        image = np.full((15,15), 2.)
-        image[:2,:] = np.nan
-        profile = rotational_profile(image, projection_matrix(15,100))
-        np.testing.assert_allclose(profile, 2, atol=1e-12)
 
     def test_circular_shift_minimum_distance(self):
         """Null shifts stay ≥60s away in both circular directions."""
@@ -180,7 +193,8 @@ class FinalPipelineTests(unittest.TestCase):
         from dm8_modeling.data import sha256
         summary = json.loads((ROOT/"results/final_results.json").read_text())
         self.assertEqual(summary["config_sha256"], sha256(ROOT/"configs/final_analysis.json"))
-        self.assertEqual(len(summary["numerical_regression"]), 11)
+        self.assertEqual(len(summary["numerical_regression"]), 8)
+        self.assertNotIn("models", summary)
         self.assertTrue(all(check["passed"] for check in summary["numerical_regression"].values()))
         for key, target in CONFIG["numerical_regression"].items():
             if key != "absolute_tolerance":
@@ -193,6 +207,79 @@ class FinalPipelineTests(unittest.TestCase):
                          summary["statistics"]["center_p_negative"])
         self.assertEqual(empirical_p(summary["spatial"]["spatial_surround"], samples[:,1], positive=True),
                          summary["statistics"]["surround_p_positive"])
+
+    def test_rf_figure_shared_scale(self):
+        """Every RF panel preserves its array and shares one symmetric quantitative color scale."""
+        from dm8_modeling import plotting
+        flies = []
+        for index in range(5):
+            image = np.zeros((15,15))
+            image[7,7] = -index-1
+            flies.append({"map":image})
+        population = {"map":np.mean([f["map"] for f in flies], axis=0)}
+        with patch.object(plotting, "save_figure") as save:
+            plotting.receptive_field_figure(Path("unused"), flies, population)
+        figure = save.call_args.args[0]
+        try:
+            norm = figure.axes[0].images[0].norm
+            self.assertEqual((norm.vmin,norm.vcenter,norm.vmax), (-5,0,5))
+            for axis, image in zip(figure.axes[:6], [f["map"] for f in flies]+[population["map"]], strict=True):
+                self.assertIs(axis.images[0].norm, norm)
+                self.assertEqual(axis.get_box_aspect(), 1)
+                np.testing.assert_array_equal(axis.images[0].get_array(), image)
+        finally:
+            plotting.plt.close(figure)
+
+    def test_zone_figure_keeps_negative_surround(self):
+        """Separate scatter scales show every biological replicate, including negative periphery."""
+        from dm8_modeling import plotting
+        row, col = np.mgrid[:15,:15]
+        radius = np.hypot(row-7,col-7)
+        flies = []
+        surround = [.005,.001,.017,-.028,.002]
+        for index, value in enumerate(surround):
+            image = np.zeros((15,15))
+            image[radius <= 1.5] = -.7-index*.2
+            image[(radius >= 3)&(radius <= 6)] = value
+            flies.append({"map":image})
+        population = {"map":np.mean([f["map"] for f in flies], axis=0)}
+        with patch.object(plotting, "save_figure") as save:
+            plotting.spatial_zone_figure(Path("unused"), flies, population, CONFIG)
+        figure = save.call_args.args[0]
+        try:
+            values = [float(mark.get_offsets()[0,1]) for mark in figure.axes[1].collections]
+            np.testing.assert_allclose(values[:5], surround, atol=1e-12)
+            np.testing.assert_allclose(values[-1], np.mean(surround), atol=1e-12)
+            low, high = figure.axes[1].get_ylim()
+            self.assertLess(low, min(surround))
+            self.assertGreater(high, max(surround))
+            self.assertGreater(np.ptp(figure.axes[0].get_ylim()), 10*np.ptp(figure.axes[1].get_ylim()))
+        finally:
+            plotting.plt.close(figure)
+
+    def test_final_figure_exports(self):
+        """Exactly six PNG/SVG pairs remain; all PNGs retain ≥300 dpi export metadata."""
+        from PIL import Image
+        import xml.etree.ElementTree as ET
+        expected = {"figure_1_receptive_fields", "figure_2_spatial_zones", "figure_3_temporal_rf",
+                    "figure_4_full_pipeline_null", "supplementary_s1_support", "methods_pipeline"}
+        folder = ROOT/"results/figures"
+        self.assertEqual({p.stem for p in folder.glob("*.png")}, expected)
+        self.assertEqual({p.stem for p in folder.glob("*.svg")}, expected)
+        for stem in expected:
+            with Image.open(folder/f"{stem}.png") as image:
+                self.assertGreaterEqual(min(image.info["dpi"]), 299.9)
+                self.assertEqual(image.width, 2010)
+            self.assertTrue(ET.parse(folder/f"{stem}.svg").getroot().tag.endswith("svg"))
+            self.assertTrue(all(line == line.rstrip() for line in (folder/f"{stem}.svg").read_text().splitlines()))
+        from dm8_modeling import plotting
+        with tempfile.TemporaryDirectory() as temporary:
+            figure, axis = plotting.plt.subplots(figsize=(1,1))
+            axis.plot([0,1],[0,1])
+            plotting.save_figure(figure, Path(temporary), "export")
+            vector = Path(temporary)/"export.svg"
+            self.assertTrue(all(line == line.rstrip() for line in vector.read_text().splitlines()))
+            self.assertTrue(ET.parse(vector).getroot().tag.endswith("svg"))
 
 
 if __name__ == "__main__":
