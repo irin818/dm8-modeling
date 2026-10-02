@@ -25,7 +25,10 @@ STYLE = {"font.family": "DejaVu Sans", "font.size": 9, "axes.titlesize": 9,
 def save_figure(figure, folder: Path, stem: str) -> None:
     """Export one figure as 300 dpi PNG and SVG; no data changes or date stamp."""
     figure.savefig(folder/f"{stem}.png", dpi=300)
-    figure.savefig(folder/f"{stem}.svg", metadata={"Date": None})
+    svg_path = folder/f"{stem}.svg"
+    figure.savefig(svg_path, metadata={"Date": None})
+    # Matplotlib leaves spaces before path-data newlines; the newline keeps tokens separate.
+    svg_path.write_text("\n".join(line.rstrip() for line in svg_path.read_text().splitlines())+"\n")
     plt.close(figure)
 
 

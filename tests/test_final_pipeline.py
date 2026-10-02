@@ -271,6 +271,15 @@ class FinalPipelineTests(unittest.TestCase):
                 self.assertGreaterEqual(min(image.info["dpi"]), 299.9)
                 self.assertEqual(image.width, 2010)
             self.assertTrue(ET.parse(folder/f"{stem}.svg").getroot().tag.endswith("svg"))
+            self.assertTrue(all(line == line.rstrip() for line in (folder/f"{stem}.svg").read_text().splitlines()))
+        from dm8_modeling import plotting
+        with tempfile.TemporaryDirectory() as temporary:
+            figure, axis = plotting.plt.subplots(figsize=(1,1))
+            axis.plot([0,1],[0,1])
+            plotting.save_figure(figure, Path(temporary), "export")
+            vector = Path(temporary)/"export.svg"
+            self.assertTrue(all(line == line.rstrip() for line in vector.read_text().splitlines()))
+            self.assertTrue(ET.parse(vector).getroot().tag.endswith("svg"))
 
 
 if __name__ == "__main__":
